@@ -12,16 +12,42 @@ class UserProvider extends BaseViewModel {
   Future<void> login(String email, String password) async {
     try {
       setLoading();
-      
+
       // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // TODO: Replace with actual API call
       final userData = await _apiService.login(email, password);
-      
+
       _user = User.fromJson(userData);
       setSuccess();
-      
+    } catch (e) {
+      final errorMessage = ExceptionHandler.getErrorMessage(e);
+      setError(errorMessage);
+      rethrow;
+    }
+  }
+
+  Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      setLoading();
+
+      // Simulate API call delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      // TODO: Replace with actual API call
+      final userData = await _apiService.register(
+        name: name,
+        email: email,
+        password: password,
+      );
+
+      _user = User.fromJson(userData);
+      setSuccess();
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -32,13 +58,12 @@ class UserProvider extends BaseViewModel {
   Future<void> logout() async {
     try {
       setLoading();
-      
+
       // TODO: Call logout API if needed
       await _apiService.logout();
-      
+
       _user = null;
       setIdle();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -48,13 +73,12 @@ class UserProvider extends BaseViewModel {
   Future<void> updateProfile(User updatedUser) async {
     try {
       setLoading();
-      
+
       // TODO: Replace with actual API call
       final userData = await _apiService.updateUser(updatedUser.toJson());
-      
+
       _user = User.fromJson(userData);
       setSuccess();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -64,16 +88,15 @@ class UserProvider extends BaseViewModel {
 
   Future<void> refreshUser() async {
     if (_user == null) return;
-    
+
     try {
       setLoading();
-      
+
       // TODO: Replace with actual API call
       final userData = await _apiService.getUser(_user!.id);
-      
+
       _user = User.fromJson(userData);
       setSuccess();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
