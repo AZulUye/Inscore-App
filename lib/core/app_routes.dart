@@ -1,6 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:inscore_app/screens/main_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../features/profile/presentation/profile_provider.dart';
+import '../features/profile/presentation/profile_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/settings_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
@@ -11,6 +15,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String dashboard = '/dashboard';
   static const String settings = '/settings';
+  static const String profile = '/profile';
   static const String main = '/main';
 
   static final GoRouter router = GoRouter(
@@ -35,6 +40,14 @@ class AppRoutes {
         path: settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: profile,
+        name: 'profile',
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (context) => ProfileProvider(),
+          child: const ProfileScreen(),
+        ),
       ),
       GoRoute(
         path: main,
