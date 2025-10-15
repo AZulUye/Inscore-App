@@ -28,14 +28,7 @@ class SettingsScreen extends StatelessWidget {
               _buildListTile(
                 context,
                 title: 'Change Password',
-                onTap: () {
-                  // TODO: Navigate to change password screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Change password feature coming soon'),
-                    ),
-                  );
-                },
+                onTap: () => context.go(AppRoutes.changePassword),
               ),
               _buildListTile(
                 context,

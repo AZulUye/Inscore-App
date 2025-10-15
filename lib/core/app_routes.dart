@@ -9,6 +9,7 @@ import '../screens/home_screen.dart';
 import '../screens/settings_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/auth/presentation/change_password_screen.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -17,6 +18,7 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String profile = '/profile';
   static const String main = '/main';
+  static const String changePassword = '/change-password';
 
   static final GoRouter router = GoRouter(
     initialLocation: main,
@@ -40,6 +42,11 @@ class AppRoutes {
         path: settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: changePassword,
+        name: 'change_password',
+        builder: (context, state) => const ChangePasswordScreen(),
       ),
       GoRoute(
         path: profile,
