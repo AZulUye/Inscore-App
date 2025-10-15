@@ -35,85 +35,63 @@ class SocialMediaSection extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
+          child: Column(
             children: [
-              // Social Media Icon
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: iconColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(iconData, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
-
-              // Username (expand to take remaining space)
-              Expanded(
-                child: Text(
-                  username,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
-              // Separator
-              Container(width: 1, height: 40, color: Colors.grey.shade300),
-              const SizedBox(width: 16),
-
-              // Followers (use Flexible so it doesn't force overflow)
-              Flexible(
-                fit: FlexFit.loose,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      followers,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: iconColor,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Text(
-                      'Followers',
+                    child: Icon(iconData, color: Colors.white, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      username,
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 12,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '4500',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        'Followers',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-
-              const SizedBox(width: 16),
-
-              // Separator
-              Container(width: 1, height: 40, color: Colors.grey.shade300),
-              const SizedBox(width: 16),
-
-              // Duplicate followers section (also wrapped in Flexible)
-              Flexible(
-                fit: FlexFit.loose,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 16),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      followers,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      'Following',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
-                      ),
-                    ),
+                    _MetricItem(value: '1965', label: 'Engagement Rate'),
+                    _Divider(),
+                    _MetricItem(value: '1965', label: 'Engagement per Post'),
+                    _Divider(),
+                    _MetricItem(value: '1965', label: 'Reach Ratio'),
                   ],
                 ),
               ),
@@ -121,6 +99,51 @@ class SocialMediaSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _MetricItem extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _MetricItem({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 10,
+              height: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 32,
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      color: Colors.grey.shade300,
     );
   }
 }

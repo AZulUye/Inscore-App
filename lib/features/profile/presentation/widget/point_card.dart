@@ -19,11 +19,11 @@ class PointCard extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(8),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Flexible(child: Icon(icon, size: 32, color: Colors.grey.shade600)),
+          Flexible(child: Icon(icon, size: 24, color: Colors.grey.shade600)),
           SizedBox(width: 8),
           Flexible(
             flex: 3,
@@ -34,13 +34,13 @@ class PointCard extends StatelessWidget {
                   score,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 18,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   label,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
                 ),
               ],
             ),
