@@ -17,7 +17,7 @@ class LeaderboardProvider extends BaseViewModel {
 
   Future<void> fetchLeaderboard(String period) async {
     try {
-      setLoading();
+      setLoading(true);
       final result = await _apiService.fetchLeaderboard(period);
       _userScores = result;
       setSuccess();

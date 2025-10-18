@@ -10,6 +10,8 @@ import '../screens/settings_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
+import '../features/profile/presentation/edit_profile_screen.dart';
+import '../features/profile/presentation/edit_profile_provider.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -19,6 +21,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String main = '/main';
   static const String changePassword = '/change-password';
+  static const String editProfile = '/edit-profile';
 
   static final GoRouter router = GoRouter(
     initialLocation: main,
@@ -47,6 +50,14 @@ class AppRoutes {
         path: changePassword,
         name: 'change_password',
         builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: editProfile,
+        name: 'edit_profile',
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (context) => EditProfileProvider(),
+          child: const EditProfileScreen(),
+        ),
       ),
       GoRoute(
         path: profile,

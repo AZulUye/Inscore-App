@@ -3,26 +3,21 @@ import 'package:inscore_app/models/user.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class ProfileProvider extends BaseViewModel {
+class EditProfileProvider extends BaseViewModel {
   User? _currentUser;
   String _username = '';
-  String _password = '';
-  String _confirmPassword = '';
+  String _email = '';
   File? _profileImage;
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
 
   User? get currentUser => _currentUser;
   String get username => _username;
-  String get password => _password;
-  String get confirmPassword => _confirmPassword;
+  String get email => _email;
   File? get profileImage => _profileImage;
-  bool get obscurePassword => _obscurePassword;
-  bool get obscureConfirmPassword => _obscureConfirmPassword;
 
   void initProfile(User user) {
     _currentUser = user;
     _username = user.name;
+    _email = user.email;
     notifyListeners();
   }
 
@@ -31,23 +26,8 @@ class ProfileProvider extends BaseViewModel {
     notifyListeners();
   }
 
-  void setPassword(String value) {
-    _password = value;
-    notifyListeners();
-  }
-
-  void setConfirmPassword(String value) {
-    _confirmPassword = value;
-    notifyListeners();
-  }
-
-  void togglePasswordVisibility() {
-    _obscurePassword = !_obscurePassword;
-    notifyListeners();
-  }
-
-  void toggleConfirmPasswordVisibility() {
-    _obscureConfirmPassword = !_obscureConfirmPassword;
+  void setEmail(String value) {
+    _email = value;
     notifyListeners();
   }
 
@@ -66,7 +46,8 @@ class ProfileProvider extends BaseViewModel {
         notifyListeners();
       }
     } catch (e) {
-      print('Error picking image: $e');
+      // Error picking image - could be logged to crashlytics in production
+      rethrow;
     }
   }
 
@@ -75,12 +56,13 @@ class ProfileProvider extends BaseViewModel {
       throw Exception('Username tidak boleh kosong');
     }
 
-    if (_password.isNotEmpty && _password != _confirmPassword) {
-      throw Exception('Password tidak sama');
+    if (_email.isEmpty) {
+      throw Exception('Email tidak boleh kosong');
     }
 
-    if (_password.isNotEmpty && _password.length < 6) {
-      throw Exception('Password minimal 6 karakter');
+    // Basic email validation
+    if (!_email.contains('@') || !_email.contains('.')) {
+      throw Exception('Format email tidak valid');
     }
 
     setLoading(true);
@@ -92,25 +74,23 @@ class ProfileProvider extends BaseViewModel {
       if (_currentUser != null) {
         _currentUser = _currentUser!.copyWith(
           name: _username,
+          email: _email,
           updatedAt: DateTime.now(),
         );
       }
 
+      setSuccess();
       notifyListeners();
     } catch (e) {
+      setError('Gagal mengupdate profile: $e');
       throw Exception('Gagal mengupdate profile: $e');
-    } finally {
-      setLoading(false);
     }
   }
 
   void resetForm() {
     _username = _currentUser?.name ?? '';
-    _password = '';
-    _confirmPassword = '';
+    _email = _currentUser?.email ?? '';
     _profileImage = null;
-    _obscurePassword = true;
-    _obscureConfirmPassword = true;
     notifyListeners();
   }
 }
