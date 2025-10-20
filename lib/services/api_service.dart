@@ -35,7 +35,9 @@ class ApiService {
           handler.next(options);
         },
         onResponse: (response, handler) {
-          _logger.d('Response: ${response.statusCode} ${response.requestOptions.path}');
+          _logger.d(
+            'Response: ${response.statusCode} ${response.requestOptions.path}',
+          );
           _logger.d('Data: ${response.data}');
           handler.next(response);
         },
@@ -53,25 +55,27 @@ class ApiService {
     try {
       // Mock login for demo purposes
       await Future.delayed(const Duration(seconds: 1));
-      
+
       if (email == 'demo@example.com' && password == 'password') {
         return {
           'id': 'demo_user_123',
           'name': 'Demo User',
           'email': email,
           'avatar': null,
-          'createdAt': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
+          'createdAt': DateTime.now()
+              .subtract(const Duration(days: 30))
+              .toIso8601String(),
           'updatedAt': DateTime.now().toIso8601String(),
         };
       }
-      
+
       // For real implementation:
       // final response = await _dio.post('/auth/login', data: {
       //   'email': email,
       //   'password': password,
       // });
       // return response.data;
-      
+
       throw DioException(
         requestOptions: RequestOptions(path: '/auth/login'),
         response: Response(
@@ -80,7 +84,50 @@ class ApiService {
           data: {'message': 'Invalid credentials'},
         ),
       );
-      
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      // Mock register for demo purposes
+      await Future.delayed(const Duration(seconds: 1));
+
+      // simple mock rule: email must not be already 'demo@example.com'
+      if (email.toLowerCase() == 'demo@example.com') {
+        throw DioException(
+          requestOptions: RequestOptions(path: '/auth/register'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/auth/register'),
+            statusCode: 409,
+            data: {'message': 'Email already in use'},
+          ),
+        );
+      }
+
+      return {
+        'id': 'user_${DateTime.now().millisecondsSinceEpoch}',
+        'name': name,
+        'email': email,
+        'avatar': null,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
+
+      // For real implementation:
+      // final response = await _dio.post('/auth/register', data: {
+      //   'name': name,
+      //   'email': email,
+      //   'password': password,
+      // });
+      // return response.data;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
@@ -92,10 +139,9 @@ class ApiService {
     try {
       // Mock logout
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // For real implementation:
       // await _dio.post('/auth/logout');
-      
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
@@ -108,20 +154,21 @@ class ApiService {
     try {
       // Mock get user for demo purposes
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       return {
         'id': userId,
         'name': 'Demo User',
         'email': 'demo@example.com',
         'avatar': null,
-        'createdAt': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
+        'createdAt': DateTime.now()
+            .subtract(const Duration(days: 30))
+            .toIso8601String(),
         'updatedAt': DateTime.now().toIso8601String(),
       };
-      
+
       // For real implementation:
       // final response = await _dio.get('/users/$userId');
       // return response.data;
-      
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
@@ -133,16 +180,12 @@ class ApiService {
     try {
       // Mock update user for demo purposes
       await Future.delayed(const Duration(milliseconds: 500));
-      
-      return {
-        ...userData,
-        'updatedAt': DateTime.now().toIso8601String(),
-      };
-      
+
+      return {...userData, 'updatedAt': DateTime.now().toIso8601String()};
+
       // For real implementation:
       // final response = await _dio.put('/users/${userData['id']}', data: userData);
       // return response.data;
-      
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {

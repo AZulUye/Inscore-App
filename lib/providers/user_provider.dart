@@ -28,6 +28,33 @@ class UserProvider extends BaseViewModel {
     }
   }
 
+  Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      setLoading();
+
+      // Simulate API call delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      // TODO: Replace with actual API call
+      final userData = await _apiService.register(
+        name: name,
+        email: email,
+        password: password,
+      );
+
+      _user = User.fromJson(userData);
+      setSuccess();
+    } catch (e) {
+      final errorMessage = ExceptionHandler.getErrorMessage(e);
+      setError(errorMessage);
+      rethrow;
+    }
+  }
+
   Future<void> logout() async {
     try {
       setLoading(true);

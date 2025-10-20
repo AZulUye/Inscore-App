@@ -8,14 +8,20 @@ import '../features/profile/presentation/profile_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/settings_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/register_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../screens/splash_screen.dart';
+import '../screens/onboarding_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/edit_profile_provider.dart';
 
 class AppRoutes {
   static const String home = '/';
+  static const String splash = '/splash';
+  static const String intro = '/intro';
   static const String login = '/login';
+  static const String register = '/register';
   static const String dashboard = '/dashboard';
   static const String settings = '/settings';
   static const String profile = '/profile';
@@ -24,8 +30,18 @@ class AppRoutes {
   static const String editProfile = '/edit-profile';
 
   static final GoRouter router = GoRouter(
-    initialLocation: main,
+    initialLocation: splash,
     routes: [
+      GoRoute(
+        path: splash,
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: intro,
+        name: 'intro',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
       GoRoute(
         path: home,
         name: 'home',
@@ -35,6 +51,11 @@ class AppRoutes {
         path: login,
         name: 'login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: register,
+        name: 'register',
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
         path: dashboard,

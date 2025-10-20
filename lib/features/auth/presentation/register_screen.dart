@@ -6,41 +6,52 @@ import '../../../core/app_routes.dart';
 import '../../../providers/user_provider.dart';
 import '../../../shared/loading_widget.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
+
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     try {
-      await userProvider.login(
-        _emailController.text.trim(),
-        _passwordController.text,
+      await userProvider.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
-      if (!mounted) return;
-      context.go(AppRoutes.dashboard);
+
+      if (mounted) {
+        // After successful register, navigate to main or dashboard
+        context.go(AppRoutes.home);
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Login failed: ${e.toString()}'),
+          content: Text('Registration failed: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -79,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Masuk',
+                              'Daftar',
                               style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w800,
                                 color: theme.colorScheme.onPrimaryContainer,
@@ -87,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Masuk ke akun bisnis Anda untuk mengelola penilaian holistik dan data kredibilitas.',
+                              'Buat akun bisnis untuk mulai membangun kredibilitas dengan penilaian holistik.',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onPrimaryContainer
                                     .withValues(alpha: 0.8),
@@ -108,7 +119,44 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Email bisnis label + field
+                          Text(
+                            'Nama Bisnis',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.9,
+                              ),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              hintText: 'Masukkan nama bisnis',
+                              filled: true,
+                              fillColor: theme.colorScheme.primaryContainer
+                                  .withValues(alpha: 0.4),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                                horizontal: 16,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Mohon masukkan nama lengkap';
+                              }
+                              if (value.trim().length < 3) {
+                                return 'Nama minimal 3 karakter';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+
                           Text(
                             'Email Bisnis',
                             style: theme.textTheme.bodyMedium?.copyWith(
@@ -150,7 +198,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 16),
 
-                          // Password label + field
                           Text(
                             'Kata Sandi',
                             style: theme.textTheme.bodyMedium?.copyWith(
@@ -198,6 +245,56 @@ class _LoginScreenState extends State<LoginScreen> {
                               return null;
                             },
                           ),
+                          const SizedBox(height: 16),
+
+                          Text(
+                            'Konfirmasi Kata Sandi',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.9,
+                              ),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: _obscureConfirmPassword,
+                            decoration: InputDecoration(
+                              hintText: 'Masukkan ulang kata sandi',
+                              filled: true,
+                              fillColor: theme.colorScheme.primaryContainer
+                                  .withValues(alpha: 0.4),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                                horizontal: 16,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () => setState(() {
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword;
+                                }),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Mohon konfirmasi kata sandi';
+                              }
+                              if (value != _passwordController.text) {
+                                return 'Konfirmasi kata sandi tidak cocok';
+                              }
+                              return null;
+                            },
+                          ),
 
                           const SizedBox(height: 24),
                           SizedBox(
@@ -210,29 +307,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              onPressed: _handleLogin,
-                              child: const Text('Masuk'),
+                              onPressed: _handleRegister,
+                              child: const Text('Daftar'),
                             ),
                           ),
-
-                          const SizedBox(height: 12),
-                          Center(
-                            child: TextButton(
-                              onPressed: () {
-                                // TODO: Implement forgot password
-                              },
-                              child: const Text('Lupa Kata Sandi'),
-                            ),
-                          ),
-
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text('Belum punya akun? '),
+                              const Text('Sudah punya akun? '),
                               TextButton(
-                                onPressed: () => context.go(AppRoutes.register),
-                                child: const Text('Daftar'),
+                                onPressed: () => context.go(AppRoutes.login),
+                                child: const Text('Masuk'),
                               ),
                             ],
                           ),
