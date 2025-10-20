@@ -18,7 +18,7 @@ abstract class BaseViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setLoading() {
+  void setLoading(bool bool) {
     setState(ViewState.loading);
   }
 

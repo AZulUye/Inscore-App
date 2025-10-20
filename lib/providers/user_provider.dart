@@ -11,17 +11,16 @@ class UserProvider extends BaseViewModel {
 
   Future<void> login(String email, String password) async {
     try {
-      setLoading();
-      
+      setLoading(true);
+
       // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // TODO: Replace with actual API call
       final userData = await _apiService.login(email, password);
-      
+
       _user = User.fromJson(userData);
       setSuccess();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -31,14 +30,13 @@ class UserProvider extends BaseViewModel {
 
   Future<void> logout() async {
     try {
-      setLoading();
-      
+      setLoading(true);
+
       // TODO: Call logout API if needed
       await _apiService.logout();
-      
+
       _user = null;
       setIdle();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -47,14 +45,13 @@ class UserProvider extends BaseViewModel {
 
   Future<void> updateProfile(User updatedUser) async {
     try {
-      setLoading();
-      
+      setLoading(true);
+
       // TODO: Replace with actual API call
       final userData = await _apiService.updateUser(updatedUser.toJson());
-      
+
       _user = User.fromJson(userData);
       setSuccess();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -64,16 +61,15 @@ class UserProvider extends BaseViewModel {
 
   Future<void> refreshUser() async {
     if (_user == null) return;
-    
+
     try {
-      setLoading();
-      
+      setLoading(true);
+
       // TODO: Replace with actual API call
       final userData = await _apiService.getUser(_user!.id);
-      
+
       _user = User.fromJson(userData);
       setSuccess();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
