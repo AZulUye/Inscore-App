@@ -1,5 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:inscore_app/screens/main_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../features/profile/presentation/profile_provider.dart';
+import '../features/profile/presentation/profile_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/settings_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
@@ -7,6 +12,9 @@ import '../features/auth/presentation/register_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/onboarding_screen.dart';
+import '../features/auth/presentation/change_password_screen.dart';
+import '../features/profile/presentation/edit_profile_screen.dart';
+import '../features/profile/presentation/edit_profile_provider.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -16,6 +24,10 @@ class AppRoutes {
   static const String register = '/register';
   static const String dashboard = '/dashboard';
   static const String settings = '/settings';
+  static const String profile = '/profile';
+  static const String main = '/main';
+  static const String changePassword = '/change-password';
+  static const String editProfile = '/edit-profile';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -54,6 +66,32 @@ class AppRoutes {
         path: settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: changePassword,
+        name: 'change_password',
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: editProfile,
+        name: 'edit_profile',
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (context) => EditProfileProvider(),
+          child: const EditProfileScreen(),
+        ),
+      ),
+      GoRoute(
+        path: profile,
+        name: 'profile',
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (context) => ProfileProvider(),
+          child: const ProfileScreen(),
+        ),
+      ),
+      GoRoute(
+        path: main,
+        name: 'main',
+        builder: (context, state) => const MainScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

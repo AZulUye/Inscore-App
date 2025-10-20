@@ -11,7 +11,7 @@ class UserProvider extends BaseViewModel {
 
   Future<void> login(String email, String password) async {
     try {
-      setLoading();
+      setLoading(true);
 
       // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
@@ -57,7 +57,7 @@ class UserProvider extends BaseViewModel {
 
   Future<void> logout() async {
     try {
-      setLoading();
+      setLoading(true);
 
       // TODO: Call logout API if needed
       await _apiService.logout();
@@ -72,7 +72,7 @@ class UserProvider extends BaseViewModel {
 
   Future<void> updateProfile(User updatedUser) async {
     try {
-      setLoading();
+      setLoading(true);
 
       // TODO: Replace with actual API call
       final userData = await _apiService.updateUser(updatedUser.toJson());
@@ -90,7 +90,7 @@ class UserProvider extends BaseViewModel {
     if (_user == null) return;
 
     try {
-      setLoading();
+      setLoading(true);
 
       // TODO: Replace with actual API call
       final userData = await _apiService.getUser(_user!.id);
