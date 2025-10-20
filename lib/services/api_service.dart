@@ -53,37 +53,20 @@ class ApiService {
   // Authentication endpoints
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      // Mock login for demo purposes
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (email == 'demo@example.com' && password == 'password') {
-        return {
-          'id': 'demo_user_123',
-          'name': 'Demo User',
-          'email': email,
-          'avatar': null,
-          'createdAt': DateTime.now()
-              .subtract(const Duration(days: 30))
-              .toIso8601String(),
-          'updatedAt': DateTime.now().toIso8601String(),
-        };
-      }
-
-      // For real implementation:
-      // final response = await _dio.post('/auth/login', data: {
-      //   'email': email,
-      //   'password': password,
-      // });
-      // return response.data;
-
-      throw DioException(
-        requestOptions: RequestOptions(path: '/auth/login'),
-        response: Response(
-          requestOptions: RequestOptions(path: '/auth/login'),
-          statusCode: 401,
-          data: {'message': 'Invalid credentials'},
-        ),
+      final response = await _dio.post(
+        '/login',
+        data: {'email': email, 'password': password},
       );
+      final data = response.data as Map<String, dynamic>;
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Login failed',
+        );
+      }
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
