@@ -38,11 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
       context.go(AppRoutes.dashboard);
     } catch (e) {
       if (!mounted) return;
+      // Ambil pesan error dari provider jika ada
+      final errorMsg = userProvider.error ?? 'Login gagal';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login failed: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
       );
     }
   }

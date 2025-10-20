@@ -2,24 +2,39 @@ import '../core/base_viewmodel.dart';
 import '../models/user.dart';
 import '../services/api_service.dart';
 import '../core/exception_handler.dart';
+import '../core/constants.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserProvider extends BaseViewModel {
+  String? get error => isError ? errorMessage : null;
   User? _user;
   final ApiService _apiService = ApiService();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   User? get user => _user;
 
   Future<void> login(String email, String password) async {
     try {
       setLoading(true);
+      final loginData = await _apiService.login(email, password);
 
-      // Simulate API call delay
-      await Future.delayed(const Duration(seconds: 1));
+      final userJson = loginData['user'] as Map<String, dynamic>;
+      final token = loginData['sanctum_token'] as String?;
+      if (token == null) {
+        throw Exception('Token tidak ditemukan');
+      }
 
-      // TODO: Replace with actual API call
-      final userData = await _apiService.login(email, password);
+  await _secureStorage.write(key: AppConstants.accessTokenKey, value: token);
+  _apiService.setAuthorizationHeader(token);
 
-      _user = User.fromJson(userData);
+      _user = User(
+        id: userJson['id'].toString(),
+        name: userJson['name'] ?? '',
+        email: userJson['email'] ?? '',
+        avatar: userJson['avatar_url'] ?? '',
+        createdAt: DateTime.parse(userJson['created_at']),
+        updatedAt: DateTime.parse(userJson['updated_at']),
+      );
       setSuccess();
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
@@ -32,21 +47,18 @@ class UserProvider extends BaseViewModel {
     required String name,
     required String email,
     required String password,
+    required String passwordConfirmation,
   }) async {
     try {
-      setLoading();
+      setLoading(true);
 
-      // Simulate API call delay
-      await Future.delayed(const Duration(seconds: 1));
-
-      // TODO: Replace with actual API call
-      final userData = await _apiService.register(
+      await _apiService.register(
         name: name,
         email: email,
         password: password,
+        passwordConfirmation: passwordConfirmation,
       );
 
-      _user = User.fromJson(userData);
       setSuccess();
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);

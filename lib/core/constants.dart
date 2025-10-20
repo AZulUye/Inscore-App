@@ -1,6 +1,6 @@
 class AppConstants {
   // API Configuration
-  static const String baseUrl = 'https://api.example.com';
+  static const String baseUrl = 'https://inscore.fly.biz.id/api';
   static const String apiVersion = 'v1';
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
@@ -40,7 +40,8 @@ class AppConstants {
   static const String saveSuccess = 'Data saved successfully';
 
   // Regex Patterns
-  static const String emailRegex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+  static const String emailRegex =
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
   static const String phoneRegex = r'^\+?[\d\s\-\(\)]+$';
 
   // Image Paths

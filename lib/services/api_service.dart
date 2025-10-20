@@ -53,37 +53,20 @@ class ApiService {
   // Authentication endpoints
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      // Mock login for demo purposes
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (email == 'demo@example.com' && password == 'password') {
-        return {
-          'id': 'demo_user_123',
-          'name': 'Demo User',
-          'email': email,
-          'avatar': null,
-          'createdAt': DateTime.now()
-              .subtract(const Duration(days: 30))
-              .toIso8601String(),
-          'updatedAt': DateTime.now().toIso8601String(),
-        };
-      }
-
-      // For real implementation:
-      // final response = await _dio.post('/auth/login', data: {
-      //   'email': email,
-      //   'password': password,
-      // });
-      // return response.data;
-
-      throw DioException(
-        requestOptions: RequestOptions(path: '/auth/login'),
-        response: Response(
-          requestOptions: RequestOptions(path: '/auth/login'),
-          statusCode: 401,
-          data: {'message': 'Invalid credentials'},
-        ),
+      final response = await _dio.post(
+        '/login',
+        data: {'email': email, 'password': password},
       );
+      final data = response.data as Map<String, dynamic>;
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Login failed',
+        );
+      }
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
@@ -95,39 +78,29 @@ class ApiService {
     required String name,
     required String email,
     required String password,
+    required String passwordConfirmation,
   }) async {
     try {
-      // Mock register for demo purposes
-      await Future.delayed(const Duration(seconds: 1));
+      final response = await _dio.post(
+        '/register',
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
+      );
 
-      // simple mock rule: email must not be already 'demo@example.com'
-      if (email.toLowerCase() == 'demo@example.com') {
+      final data = response.data as Map<String, dynamic>;
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
         throw DioException(
-          requestOptions: RequestOptions(path: '/auth/register'),
-          response: Response(
-            requestOptions: RequestOptions(path: '/auth/register'),
-            statusCode: 409,
-            data: {'message': 'Email already in use'},
-          ),
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Register failed',
         );
       }
-
-      return {
-        'id': 'user_${DateTime.now().millisecondsSinceEpoch}',
-        'name': name,
-        'email': email,
-        'avatar': null,
-        'createdAt': DateTime.now().toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
-      };
-
-      // For real implementation:
-      // final response = await _dio.post('/auth/register', data: {
-      //   'name': name,
-      //   'email': email,
-      //   'password': password,
-      // });
-      // return response.data;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
