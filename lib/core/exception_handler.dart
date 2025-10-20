@@ -35,7 +35,7 @@ class ExceptionHandler {
 
   static AppException handleDioException(DioException dioException) {
     _logger.e('DioException: ${dioException.message}', 
-              error: dioException, 
+      error: dioException,
               stackTrace: dioException.stackTrace);
 
     switch (dioException.type) {
@@ -56,6 +56,31 @@ class ExceptionHandler {
               'Invalid request. Please check your input.',
               code: 'BAD_REQUEST',
               details: dioException.response?.data,
+            );
+          case 422:
+            // Validation error from backend (Laravel style)
+            final data = dioException.response?.data;
+            String message = 'Validation error';
+            if (data is Map<String, dynamic>) {
+              if (data['message'] is String &&
+                  (data['message'] as String).isNotEmpty) {
+                message = data['message'];
+              } else if (data['errors'] is Map<String, dynamic>) {
+                // Flatten first error message
+                final errors = data['errors'] as Map<String, dynamic>;
+                final firstKey = errors.keys.isNotEmpty
+                    ? errors.keys.first
+                    : null;
+                final firstVal = firstKey != null ? errors[firstKey] : null;
+                if (firstVal is List && firstVal.isNotEmpty) {
+                  message = firstVal.first.toString();
+                }
+              }
+            }
+            return ValidationException(
+              message,
+              code: 'UNPROCESSABLE_ENTITY',
+              details: data,
             );
           case 401:
             return AuthenticationException(
@@ -126,7 +151,7 @@ class ExceptionHandler {
     if (exception is AppException) {
       return exception.message;
     }
-    
+
     if (exception is DioException) {
       return handleDioException(exception).message;
     }

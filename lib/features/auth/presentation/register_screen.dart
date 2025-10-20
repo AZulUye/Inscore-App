@@ -41,19 +41,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        passwordConfirmation: _confirmPasswordController.text,
       );
 
       if (mounted) {
-        // After successful register, navigate to main or dashboard
-        context.go(AppRoutes.home);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pendaftaran berhasil, silakan masuk'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        context.go(AppRoutes.login);
       }
     } catch (e) {
       if (!mounted) return;
+      final errorMsg = userProvider.error ?? 'Pendaftaran gagal';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Registration failed: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
       );
     }
   }
