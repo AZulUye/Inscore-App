@@ -8,8 +8,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class UserProvider extends BaseViewModel {
   String? get error => isError ? errorMessage : null;
   User? _user;
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  UserProvider(this._apiService);
 
   User? get user => _user;
 
@@ -24,8 +26,11 @@ class UserProvider extends BaseViewModel {
         throw Exception('Token tidak ditemukan');
       }
 
-  await _secureStorage.write(key: AppConstants.accessTokenKey, value: token);
-  _apiService.setAuthorizationHeader(token);
+      await _secureStorage.write(
+        key: AppConstants.accessTokenKey,
+        value: token,
+      );
+      _apiService.setAuthorizationHeader(token);
 
       _user = User(
         id: userJson['id'].toString(),

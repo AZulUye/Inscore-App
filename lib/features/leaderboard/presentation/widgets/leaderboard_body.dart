@@ -68,13 +68,13 @@ class _LeaderboardBodyState extends State<LeaderboardBody> {
                     const SizedBox(width: 16),
                     CircleAvatar(
                       radius: 20,
-                      backgroundImage: NetworkImage(data.avatarUrl),
+                      backgroundImage: NetworkImage(data.avatarUrl!),
                     ),
                   ],
                 ),
                 title: Text(data.name, overflow: TextOverflow.ellipsis),
                 trailing: Text(
-                  data.score.toString(),
+                  data.score.toStringAsFixed(2),
                   style: Theme.of(
                     context,
                   ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),

@@ -1,10 +1,13 @@
 import 'package:inscore_app/core/base_viewmodel.dart';
 import 'package:inscore_app/core/exception_handler.dart';
-import 'package:inscore_app/features/leaderboard/data/models/leaderboard_response_mock.dart';
-import 'package:inscore_app/features/leaderboard/data/mock_api_service.dart';
+import 'package:inscore_app/features/leaderboard/data/models/leaderboard_response.dart';
+// import 'package:inscore_app/features/leaderboard/data/mock_api_service.dart';
+import 'package:inscore_app/services/api_service.dart';
 
 class LeaderboardProvider extends BaseViewModel {
-  final MockApiService _apiService = MockApiService();
+  final ApiService _apiService;
+
+  LeaderboardProvider(this._apiService);
 
   List<UserScore>? _userScores;
 
