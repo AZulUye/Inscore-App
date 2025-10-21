@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inscore_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'core/app_theme.dart';
 import 'core/app_routes.dart';
@@ -16,8 +17,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider(create: (_) => ApiService()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(context.read<ApiService>()),
+        ),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
