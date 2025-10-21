@@ -110,7 +110,7 @@ class UserProvider extends BaseViewModel {
       setLoading(true);
 
       // TODO: Replace with actual API call
-      final userData = await _apiService.getUser(_user!.id);
+      final userData = await _apiService.getUser();
 
       _user = User.fromJson(userData);
       setSuccess();
@@ -125,5 +125,28 @@ class UserProvider extends BaseViewModel {
     setIdle();
   }
 
-  bool get isAuthenticated => _user != null;
+  // bool get isAuthenticated => _user != null;
+
+  Future<bool> isAuthenticated() async {
+    final token = await _secureStorage.read(key: AppConstants.accessTokenKey);
+    print('[isAuthenticated] Token: $token');
+    if (token != null && token.isNotEmpty) {
+      _apiService.setAuthorizationHeader(token);
+      try {
+        final userData = await _apiService.getUser();
+        print('[isAuthenticated] userData dari API: $userData');
+        _user = User.fromJson(userData);
+        print('[isAuthenticated] User parsed: \\${_user?.toJson()}');
+        setSuccess();
+      } catch (e) {
+        print('[isAuthenticated] Error saat fetch user: $e');
+        _user = null;
+        setError('Gagal fetch user');
+      }
+    } else {
+      print('[isAuthenticated] Token kosong, tidak cek user');
+    }
+    print('[isAuthenticated] Return: ${_user != null}');
+    return _user != null;
+  }
 }
