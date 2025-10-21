@@ -127,25 +127,19 @@ class ApiService {
   }
 
   // User endpoints
-  Future<Map<String, dynamic>> getUser(String userId) async {
+  Future<Map<String, dynamic>> getUser() async {
     try {
-      // Mock get user for demo purposes
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      return {
-        'id': userId,
-        'name': 'Demo User',
-        'email': 'demo@example.com',
-        'avatar': null,
-        'createdAt': DateTime.now()
-            .subtract(const Duration(days: 30))
-            .toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
-      };
-
-      // For real implementation:
-      // final response = await _dio.get('/users/$userId');
-      // return response.data;
+      final response = await _dio.get('/profile');
+      final data = response.data;
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to fetch user',
+        );
+      }
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {

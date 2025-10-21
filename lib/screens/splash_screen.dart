@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       if (!mounted) return;
-      final isAuthed = context.read<UserProvider>().isAuthenticated;
+      final isAuthed = await context.read<UserProvider>().isAuthenticated();
       if (!mounted) return;
       context.go(isAuthed ? AppRoutes.home : AppRoutes.login);
     });
