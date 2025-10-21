@@ -34,6 +34,7 @@ class ProfileProvider extends BaseViewModel {
       final result = await _apiService.fetchUserScore();
       _userScore = result;
       setSuccess();
+      notifyListeners();
     } catch (e) {
       final errorMsg = ExceptionHandler.getErrorMessage(e);
       setError(errorMsg);

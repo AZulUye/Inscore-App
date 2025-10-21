@@ -34,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(
       builder: (context, provider, child) {
+
         return Scaffold(
           body: SingleChildScrollView(
             child: Padding(
