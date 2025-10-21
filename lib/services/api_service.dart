@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:inscore_app/features/leaderboard/data/models/leaderboard_response.dart';
 import 'package:logger/logger.dart';
 import '../core/constants.dart';
 import '../core/exception_handler.dart';
@@ -236,25 +235,6 @@ class ApiService {
         queryParameters: queryParameters,
         options: options,
       );
-    } on DioException catch (e) {
-      throw ExceptionHandler.handleDioException(e);
-    } catch (e) {
-      throw ExceptionHandler.handleGenericException(e);
-    }
-  }
-
-  // fetch all user scores for leaderboard screen
-  Future<List<UserScore>> fetchLeaderboard(String period) async {
-    try {
-      final response = await _dio.get("/leaderboard/$period");
-
-      final result = LeaderboardResponse.fromJson(response.data);
-
-      if (!result.success) {
-        throw ExceptionHandler.handleGenericException(result.message);
-      }
-
-      return result.data;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {

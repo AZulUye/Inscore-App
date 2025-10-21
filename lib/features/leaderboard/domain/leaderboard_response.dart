@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:inscore_app/features/leaderboard/domain/user_score_model.dart';
+
 LeaderboardResponse leaderboardResponseFromJson(String str) =>
     LeaderboardResponse.fromJson(json.decode(str));
 
@@ -13,7 +15,7 @@ String leaderboardResponseToJson(LeaderboardResponse data) =>
 class LeaderboardResponse {
   final bool success;
   final String message;
-  final List<UserScore> data;
+  final List<UserScoreModel> data;
 
   LeaderboardResponse({
     required this.success,
@@ -25,8 +27,8 @@ class LeaderboardResponse {
       LeaderboardResponse(
         success: json["success"],
         message: json["message"],
-        data: List<UserScore>.from(
-          json["data"].map((x) => UserScore.fromJson(x)),
+        data: List<UserScoreModel>.from(
+          json["data"].map((x) => UserScoreModel.fromJson(x)),
         ),
       );
 
@@ -34,27 +36,5 @@ class LeaderboardResponse {
     "success": success,
     "message": message,
     "data": List<dynamic>.from(data.map((x) => x.toJson())),
-  };
-}
-
-class UserScore {
-  final String name;
-  final double score;
-  final String? avatarUrl;
-
-  UserScore({required this.name, required this.score, required this.avatarUrl});
-
-  factory UserScore.fromJson(Map<String, dynamic> json) => UserScore(
-    name: json["name"],
-    score: json["score"]?.toDouble(),
-    avatarUrl:
-        json["avatar_url"] ??
-        "https://picsum.photos/120", // add template image for null data
-  );
-
-  Map<String, dynamic> toJson() => {
-    "name": name,
-    "score": score,
-    "avatar_url": avatarUrl,
   };
 }
