@@ -6,7 +6,7 @@ import 'package:inscore_app/models/user.dart';
 import 'package:inscore_app/features/profile/presentation/widget/point_card.dart'
     show PointCard;
 import '../presentation/widget/social_media_section.dart';
-import 'profile_provider.dart';
+import '../presentation/profile_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -23,6 +23,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<ProfileProvider>();
       provider.initProfile(User.demo());
+      // Fetch user score and metrics
+      provider.fetchUserScore();
+      provider.fetchInstagramMetrics();
+      provider.fetchFacebookMetrics();
     });
   }
 
@@ -140,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const SizedBox(height: 8),
                         Text(
-                          'Linkebin',
+                          provider.currentUser?.name ?? 'None',
                           style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -153,8 +157,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           title: 'Instagram',
                           iconColor: Colors.pink,
                           iconData: Icons.camera_alt,
-                          username: 'username',
-                          followers: '1965',
+                          username:
+                              provider.instagramMetrics?.username ?? 'None',
+                          followers:
+                              (provider.instagramMetrics?.followers ?? '0')
+                                  .toString(),
+                          engagementRate:
+                              (provider.instagramMetrics?.engagementRate ??
+                                      '0.0')
+                                  .toString(),
+                          engagementPerPost:
+                              (provider.instagramMetrics?.engagementPerPost ??
+                                      '0')
+                                  .toString(),
+                          reachRatio:
+                              (provider.instagramMetrics?.reachRatio ?? '0.0')
+                                  .toString(),
                         ),
 
                         const SizedBox(height: 8),
@@ -162,8 +180,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           title: 'Facebook',
                           iconColor: Colors.blue,
                           iconData: Icons.facebook,
-                          username: 'username',
-                          followers: '1965',
+                          username:
+                              provider.facebookMetrics?.username ?? 'None',
+                          followers:
+                              (provider.facebookMetrics?.followers ?? '0')
+                                  .toString(),
+                          engagementRate:
+                              (provider.facebookMetrics?.engagementRate ??
+                                      '0.0')
+                                  .toString(),
+                          engagementPerPost:
+                              (provider.facebookMetrics?.engagementPerPost ??
+                                      '0')
+                                  .toString(),
+                          reachRatio:
+                              (provider.facebookMetrics?.reachRatio ?? '0.0')
+                                  .toString(),
                         ),
 
                         const SizedBox(height: 8),
@@ -185,23 +217,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisSpacing: 16,
                           childAspectRatio: 2.0,
                           padding: EdgeInsets.zero,
-                          children: const [
+                          children: [
                             PointCard(
                               icon: Icons.camera_alt_rounded,
-                              score: '9000',
+                              score:
+                                  provider.userScore?.instagramScore
+                                      .toString() ??
+                                  '0',
                               label: 'Instagram Score',
                             ),
                             PointCard(
                               icon: Icons.facebook,
-                              score: '9000',
+                              score:
+                                  provider.userScore?.facebookScore
+                                      .toString() ??
+                                  '0',
                               label: 'Facebook Score',
                             ),
                           ],
                         ),
                         const SizedBox(height: 12),
-                        const PointCard(
+                        PointCard(
                           icon: Icons.access_time,
-                          score: '9000',
+                          score:
+                              provider.userScore?.finalScore.toString() ?? '0',
                           label: 'Final Score',
                         ),
                       ],

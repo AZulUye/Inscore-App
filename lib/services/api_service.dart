@@ -3,6 +3,9 @@ import 'package:inscore_app/features/leaderboard/data/models/leaderboard_respons
 import 'package:logger/logger.dart';
 import '../core/constants.dart';
 import '../core/exception_handler.dart';
+import '../features/profile/data/models/score_response.dart';
+import '../features/profile/data/models/response_metric_facebook.dart';
+import '../features/profile/data/models/response_metric_instagram.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -257,6 +260,43 @@ class ApiService {
         throw ExceptionHandler.handleGenericException(result.message);
       }
 
+      return result.data;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  //fetch user score for profile screens
+  Future<Data> fetchUserScore() async {
+    try {
+      final response = await _dio.get('/score');
+      final result = ResponseScore.fromJson(response.data);
+      return result.data;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  Future<DataInstagram> fetchInstagramMetrics() async {
+    try {
+      final response = await _dio.get('/instagram/metrics');
+      final result = ResponseMetricInstagram.fromJson(response.data);
+      return result.data;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  Future<DataFacebook> fetchFacebookMetrics() async {
+    try {
+      final response = await _dio.get('/facebook/metrics');
+      final result = ResponseMetricFacebook.fromJson(response.data);
       return result.data;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
