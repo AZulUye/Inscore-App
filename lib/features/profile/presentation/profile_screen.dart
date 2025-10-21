@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
-import 'package:inscore_app/features/profile/presentation/widget/point_card.dart'
-    show PointCard;
+import 'package:inscore_app/providers/user_provider.dart';
+import 'package:inscore_app/features/profile/presentation/widget/point_card.dart';
 import '../presentation/widget/social_media_section.dart';
 import '../presentation/profile_provider.dart';
 
@@ -19,21 +19,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize with demo user data
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<ProfileProvider>();
-      provider.initProfile(User.demo());
+    // Initialize with user data from UserProvider
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final profileProvider = context.read<ProfileProvider>();
+      final userProvider = context.read<UserProvider>();
+
+      // Check if user is authenticated and load user data
+      await userProvider.isAuthenticated();
+
+      // Use user data from UserProvider if available
+      if (userProvider.user != null) {
+        profileProvider.initProfile(userProvider.user!);
+      } else {
+        // If no user is logged in, initialize with empty user
+        profileProvider.initProfile(User.empty());
+      }
+
       // Fetch user score and metrics
-      provider.fetchUserScore();
-      provider.fetchInstagramMetrics();
-      provider.fetchFacebookMetrics();
+      profileProvider.fetchUserScore();
+      profileProvider.fetchInstagramMetrics();
+      profileProvider.fetchFacebookMetrics();
     });
+  }
+
+  String _getDisplayName(User? user) {
+    if (user != null && user.name.isNotEmpty) {
+      return user.name;
+    }
+    return 'User';
+  }
+
+  String? _getDisplayEmail(User? user) {
+    if (user != null && user.email.isNotEmpty) {
+      return user.email;
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProfileProvider>(
-      builder: (context, provider, child) {
+    return Consumer2<ProfileProvider, UserProvider>(
+      builder: (context, profileProvider, userProvider, child) {
+        // Show loading indicator if any provider is loading or user data is not available
+        if (profileProvider.isLoading ||
+            userProvider.isLoading ||
+            profileProvider.currentUser == null ||
+            userProvider.user == null) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.greenAccent,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Memuat profil...',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
 
         return Scaffold(
           body: SingleChildScrollView(
@@ -44,53 +98,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Stack(
                     clipBehavior: Clip.none,
                     children: [
+                      // Background container with profile image
                       Container(
                         height: 320,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Colors.greenAccent,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: -53,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child:
-                              provider.currentUser?.avatar != null &&
-                                  provider.currentUser?.avatar?.isNotEmpty ==
-                                      true
-                              ? Container(
-                                  width: 320,
-                                  height: 320,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 4,
-                                    ),
+                          image:
+                              profileProvider.currentUser?.avatar != null &&
+                                  profileProvider
+                                      .currentUser!
+                                      .avatar!
+                                      .isNotEmpty
+                              ? DecorationImage(
+                                  image: NetworkImage(
+                                    profileProvider.currentUser!.avatar!,
                                   ),
-                                  child: ClipOval(
-                                    child: Image.network(
-                                      provider.currentUser!.avatar!,
-                                      width: 320,
-                                      height: 320,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                            return Icon(
-                                              Icons.person_2_sharp,
-                                              size: 320,
-                                              color: Colors.white,
-                                            );
-                                          },
-                                    ),
-                                  ),
+                                  fit: BoxFit.cover,
+                                  onError: (exception, stackTrace) {
+                                    // Handle error silently, will show green background
+                                  },
                                 )
-                              : Icon(
-                                  Icons.person_2_sharp,
-                                  size: 320,
+                              : null,
+                        ),
+                        child:
+                            profileProvider.currentUser?.avatar == null ||
+                                profileProvider.currentUser!.avatar!.isEmpty
+                            ? const Center(
+                                child: Icon(
+                                  Icons.person,
+                                  size: 120,
                                   color: Colors.white,
                                 ),
+                              )
+                            : null,
+                      ),
+                      // Overlay gradient for better text readability
+                      Container(
+                        height: 320,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.3),
+                              Colors.black.withValues(alpha: 0.1),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
                       ),
                       Padding(
@@ -110,8 +164,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
+                                  color: Colors.white.withValues(alpha: 0.2),
                                 ),
-                                child: const Icon(Icons.arrow_back, size: 24),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  size: 24,
+                                  color:
+                                      Theme.of(context).iconTheme.color ??
+                                      Colors.white,
+                                ),
                               ),
                             ),
                             InkWell(
@@ -125,10 +186,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   shape: BoxShape.circle,
                                   color: Colors.white.withValues(alpha: 0.2),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.edit,
                                   size: 24,
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).iconTheme.color ??
+                                      Colors.white,
                                 ),
                               ),
                             ),
@@ -145,13 +208,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const SizedBox(height: 8),
                         Text(
-                          provider.currentUser?.name ?? 'None',
+                          _getDisplayName(profileProvider.currentUser),
                           style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 28,
                               ),
                         ),
+                        if (_getDisplayEmail(profileProvider.currentUser) !=
+                            null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            _getDisplayEmail(profileProvider.currentUser)!,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 16,
+                                ),
+                          ),
+                        ],
                         const SizedBox(height: 24),
 
                         SocialMediaSection(
@@ -159,20 +234,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           iconColor: Colors.pink,
                           iconData: Icons.camera_alt,
                           username:
-                              provider.instagramMetrics?.username ?? 'None',
+                              profileProvider.instagramMetrics?.username ??
+                              'None',
                           followers:
-                              (provider.instagramMetrics?.followers ?? '0')
+                              (profileProvider.instagramMetrics?.followers ??
+                                      '0')
                                   .toString(),
                           engagementRate:
-                              (provider.instagramMetrics?.engagementRate ??
+                              (profileProvider
+                                          .instagramMetrics
+                                          ?.engagementRate ??
                                       '0.0')
                                   .toString(),
                           engagementPerPost:
-                              (provider.instagramMetrics?.engagementPerPost ??
+                              (profileProvider
+                                          .instagramMetrics
+                                          ?.engagementPerPost ??
                                       '0')
                                   .toString(),
                           reachRatio:
-                              (provider.instagramMetrics?.reachRatio ?? '0.0')
+                              (profileProvider.instagramMetrics?.reachRatio ??
+                                      '0.0')
                                   .toString(),
                         ),
 
@@ -182,20 +264,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           iconColor: Colors.blue,
                           iconData: Icons.facebook,
                           username:
-                              provider.facebookMetrics?.username ?? 'None',
+                              profileProvider.facebookMetrics?.username ??
+                              'None',
                           followers:
-                              (provider.facebookMetrics?.followers ?? '0')
+                              (profileProvider.facebookMetrics?.followers ??
+                                      '0')
                                   .toString(),
                           engagementRate:
-                              (provider.facebookMetrics?.engagementRate ??
+                              (profileProvider
+                                          .facebookMetrics
+                                          ?.engagementRate ??
                                       '0.0')
                                   .toString(),
                           engagementPerPost:
-                              (provider.facebookMetrics?.engagementPerPost ??
+                              (profileProvider
+                                          .facebookMetrics
+                                          ?.engagementPerPost ??
                                       '0')
                                   .toString(),
                           reachRatio:
-                              (provider.facebookMetrics?.reachRatio ?? '0.0')
+                              (profileProvider.facebookMetrics?.reachRatio ??
+                                      '0.0')
                                   .toString(),
                         ),
 
@@ -222,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             PointCard(
                               icon: Icons.camera_alt_rounded,
                               score:
-                                  provider.userScore?.instagramScore
+                                  profileProvider.userScore?.instagramScore
                                       .toString() ??
                                   '0',
                               label: 'Instagram Score',
@@ -230,7 +319,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             PointCard(
                               icon: Icons.facebook,
                               score:
-                                  provider.userScore?.facebookScore
+                                  profileProvider.userScore?.facebookScore
                                       .toString() ??
                                   '0',
                               label: 'Facebook Score',
@@ -241,7 +330,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         PointCard(
                           icon: Icons.access_time,
                           score:
-                              provider.userScore?.finalScore.toString() ?? '0',
+                              profileProvider.userScore?.finalScore
+                                  .toString() ??
+                              '0',
                           label: 'Final Score',
                         ),
                       ],

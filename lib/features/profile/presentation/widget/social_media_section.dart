@@ -59,8 +59,8 @@ class SocialMediaSection extends StatelessWidget {
                     child: Text(
                       username,
                       style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -93,9 +93,15 @@ class SocialMediaSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _MetricItem(value: engagementRate, label: 'Engagement Rate'),
+                    _MetricItem(
+                      value: engagementRate,
+                      label: 'Engagement Rate',
+                    ),
                     _Divider(),
-                    _MetricItem(value: engagementPerPost, label: 'Engagement per Post'),
+                    _MetricItem(
+                      value: engagementPerPost,
+                      label: 'Engagement per Post',
+                    ),
                     _Divider(),
                     _MetricItem(value: reachRatio, label: 'Reach Ratio'),
                   ],

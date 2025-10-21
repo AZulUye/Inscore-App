@@ -52,11 +52,11 @@ class EditProfileProvider extends BaseViewModel {
   }
 
   Future<void> updateProfile() async {
-    if (_username.isEmpty) {
+    if (_username.trim().isEmpty) {
       throw Exception('Username tidak boleh kosong');
     }
 
-    if (_email.isEmpty) {
+    if (_email.trim().isEmpty) {
       throw Exception('Email tidak boleh kosong');
     }
 
@@ -73,9 +73,14 @@ class EditProfileProvider extends BaseViewModel {
       // Update user data
       if (_currentUser != null) {
         _currentUser = _currentUser!.copyWith(
-          name: _username,
-          email: _email,
+          name: _username.trim(),
+          email: _email.trim(),
           updatedAt: DateTime.now(),
+          // Note: In a real app, you would upload the image and get the URL
+          // For now, we'll keep the existing avatar or set a placeholder
+          avatar: _profileImage != null
+              ? 'https://via.placeholder.com/150'
+              : _currentUser!.avatar,
         );
       }
 
@@ -85,6 +90,10 @@ class EditProfileProvider extends BaseViewModel {
       setError('Gagal mengupdate profile: $e');
       throw Exception('Gagal mengupdate profile: $e');
     }
+  }
+
+  User? getUpdatedUser() {
+    return _currentUser;
   }
 
   void resetForm() {

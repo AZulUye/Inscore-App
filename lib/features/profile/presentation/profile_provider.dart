@@ -28,6 +28,28 @@ class ProfileProvider extends BaseViewModel {
     notifyListeners();
   }
 
+  void updateUser(User user) {
+    _currentUser = user;
+    notifyListeners();
+  }
+
+  void setUserData({
+    required String id,
+    required String name,
+    required String email,
+    String? avatar,
+  }) {
+    _currentUser = User(
+      id: id,
+      name: name,
+      email: email,
+      avatar: avatar,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    notifyListeners();
+  }
+
   Future<void> fetchUserScore() async {
     try {
       setLoading(true);
