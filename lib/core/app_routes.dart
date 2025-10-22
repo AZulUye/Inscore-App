@@ -6,11 +6,10 @@ import 'package:provider/provider.dart';
 
 import '../features/profile/presentation/profile_provider.dart';
 import '../features/profile/presentation/profile_screen.dart';
-import '../screens/home_screen.dart';
 import '../screens/settings_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/register_screen.dart';
-import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/home/presentation/dashboard_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
@@ -46,7 +45,7 @@ class AppRoutes {
       GoRoute(
         path: home,
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => const MainScreen(),
       ),
       GoRoute(
         path: login,

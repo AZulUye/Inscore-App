@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:inscore_app/features/auth/data/auth_repository.dart';
 import 'package:inscore_app/services/api_service.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'core/app_theme.dart';
 import 'core/app_routes.dart';
 import 'providers/user_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/leaderboard_provider.dart';
+import 'features/leaderboard/data/leaderboard_repository.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   runApp(const MainApp());
 }
 
@@ -23,12 +28,20 @@ class MainApp extends StatelessWidget {
         Provider<AuthRepository>(
           create: (context) => AuthRepository(context.read<ApiService>()),
         ),
+        Provider(
+          create: (context) =>
+              LeaderboardRepository(context.read<ApiService>()),
+        ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
           create: (context) => AuthProvider(context.read<AuthRepository>()),
         ),
         ChangeNotifierProvider(
           create: (context) => UserProvider(context.read<ApiService>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              LeaderboardProvider(context.read<LeaderboardRepository>()),
         ),
       ],
       child: Consumer<ThemeProvider>(
