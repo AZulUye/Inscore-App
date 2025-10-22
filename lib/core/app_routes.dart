@@ -15,6 +15,7 @@ import '../screens/onboarding_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/edit_profile_provider.dart';
+import '../providers/auth_provider.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -76,7 +77,8 @@ class AppRoutes {
         path: editProfile,
         name: 'edit_profile',
         builder: (context, state) => ChangeNotifierProvider(
-          create: (context) => EditProfileProvider(),
+          create: (context) =>
+              EditProfileProvider(context.read<AuthProvider>()),
           child: const EditProfileScreen(),
         ),
       ),

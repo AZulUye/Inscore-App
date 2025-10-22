@@ -33,8 +33,12 @@ class UserProvider extends BaseViewModel {
     try {
       setLoading(true);
 
-      // TODO: Replace with actual API call
-      final userData = await _apiService.updateUser(updatedUser.toJson());
+      // Use the new updateProfile method from ApiService
+      final userData = await _apiService.updateProfile(
+        name: updatedUser.name,
+        email: updatedUser.email,
+        avatarPath: null, // Avatar will be handled by EditProfileProvider
+      );
 
       _user = User.fromJson(userData);
       setSuccess();

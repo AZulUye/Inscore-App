@@ -163,6 +163,100 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> updateProfile({
+    required String name,
+    required String email,
+    String? avatarPath,
+  }) async {
+    try {
+      Map<String, dynamic> formDataMap = {'name': name, 'email': email};
+
+      if (avatarPath != null && avatarPath.isNotEmpty) {
+        try {
+          formDataMap['avatar'] = await MultipartFile.fromFile(avatarPath);
+          _logger.d('Avatar file added: $avatarPath');
+        } catch (e) {
+          _logger.e('Error creating MultipartFile: $e');
+          // Continue without avatar if file creation fails
+        }
+      }
+
+      FormData formData = FormData.fromMap(formDataMap);
+
+      _logger.d('FormData fields: ${formData.fields}');
+      _logger.d('FormData files: ${formData.files}');
+
+      final response = await _dio.post(
+        '/profile',
+        data: formData,
+        options: Options(
+          headers: {'Content-Type': 'multipart/form-data'},
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to update profile',
+        );
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException in updateProfile: ${e.message}');
+      _logger.e('Response data: ${e.response?.data}');
+      _logger.e('Request data: ${e.requestOptions.data}');
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      _logger.e('Generic exception in updateProfile: $e');
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  // Alternative method for testing without multipart
+  Future<Map<String, dynamic>> updateProfileSimple({
+    required String name,
+    required String email,
+  }) async {
+    try {
+      _logger.d('Updating profile with name: $name, email: $email');
+
+      final response = await _dio.post(
+        '/profile',
+        data: {'name': name, 'email': email},
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      );
+
+      final data = response.data as Map<String, dynamic>;
+      _logger.d('Profile update response: $data');
+
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to update profile',
+        );
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException in updateProfileSimple: ${e.message}');
+      _logger.e('Response data: ${e.response?.data}');
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      _logger.e('Generic exception in updateProfileSimple: $e');
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
   // Generic request methods
   Future<Response<T>> get<T>(
     String path, {

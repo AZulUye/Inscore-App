@@ -61,8 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Consumer<ProfileProvider>(
       builder: (context, profileProvider, child) {
         // Show loading indicator if profile provider is loading or user data is not available
-        if (profileProvider.isLoading ||
-            profileProvider.currentUser == null) {
+        if (profileProvider.isLoading || profileProvider.currentUser == null) {
           return Scaffold(
             body: Center(
               child: Column(
@@ -101,22 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 320,
                         decoration: BoxDecoration(
                           color: Colors.greenAccent,
-                          image:
-                              profileProvider.currentUser?.avatar != null &&
-                                  profileProvider
-                                      .currentUser!
-                                      .avatar!
-                                      .isNotEmpty
-                              ? DecorationImage(
-                                  image: NetworkImage(
-                                    profileProvider.currentUser!.avatar!,
-                                  ),
-                                  fit: BoxFit.cover,
-                                  onError: (exception, stackTrace) {
-                                    // Handle error silently, will show green background
-                                  },
-                                )
-                              : null,
+                          image: _getValidAvatarImage(
+                            profileProvider.currentUser?.avatar,
+                          ),
                         ),
                         child:
                             profileProvider.currentUser?.avatar == null ||
@@ -343,5 +329,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       },
     );
+  }
+
+  DecorationImage? _getValidAvatarImage(String? avatarUrl) {
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      return null;
+    }
+
+    // Check if URL is valid and not a 404
+    try {
+      final uri = Uri.parse(avatarUrl);
+      if (!uri.hasScheme || (!uri.scheme.startsWith('http'))) {
+        return null;
+      }
+
+      return DecorationImage(
+        image: NetworkImage(avatarUrl),
+        fit: BoxFit.cover,
+        onError: (exception, stackTrace) {
+          // Handle error silently, will show default background
+          // Avatar image failed to load
+        },
+      );
+    } catch (e) {
+      // Invalid avatar URL, return null to show default
+      return null;
+    }
   }
 }
