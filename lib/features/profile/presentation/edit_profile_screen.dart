@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
+import 'package:inscore_app/providers/user_provider.dart';
 import 'edit_profile_provider.dart';
+import 'profile_provider.dart';
 import 'widget/form_widgets.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -20,12 +22,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize with demo user data
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Initialize with current user data from UserProvider
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = context.read<EditProfileProvider>();
-      provider.initProfile(User.demo());
-      _usernameController.text = User.demo().name;
-      _emailController.text = User.demo().email;
+      final userProvider = context.read<UserProvider>();
+
+      // Check if user is authenticated and load user data
+      await userProvider.isAuthenticated();
+
+      // Use current user data if available, otherwise use empty user
+      final currentUser = userProvider.user ?? User.empty();
+      provider.initProfile(currentUser);
+      _usernameController.text = currentUser.name;
+      _emailController.text = currentUser.email;
     });
   }
 
@@ -200,6 +209,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       await provider.updateProfile();
       if (mounted) {
+        // Update the UserProvider and ProfileProvider with the updated user data
+        final updatedUser = provider.getUpdatedUser();
+        if (updatedUser != null) {
+          // Update UserProvider
+          final userProvider = context.read<UserProvider>();
+          await userProvider.updateProfile(updatedUser);
+
+          // Update ProfileProvider
+          final profileProvider = context.read<ProfileProvider>();
+          profileProvider.updateUser(updatedUser);
+        }
+
         ScaffoldMessenger.of(this.context).showSnackBar(
           const SnackBar(
             content: Text('Profile berhasil diupdate'),

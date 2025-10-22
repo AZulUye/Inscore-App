@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:inscore_app/screens/main_screen.dart';
+import 'package:inscore_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 
 import '../features/profile/presentation/profile_provider.dart';
@@ -84,7 +85,7 @@ class AppRoutes {
         path: profile,
         name: 'profile',
         builder: (context, state) => ChangeNotifierProvider(
-          create: (context) => ProfileProvider(),
+          create: (context) => ProfileProvider(context.read<ApiService>()),
           child: const ProfileScreen(),
         ),
       ),

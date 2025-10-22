@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:inscore_app/features/leaderboard/presentation/leaderboard_provider.dart';
-import 'package:inscore_app/features/leaderboard/presentation/widgets/leaderboard_body.dart';
+import 'package:inscore_app/features/leaderboard/data/leaderboard_repository.dart';
+import 'package:inscore_app/providers/leaderboard_provider.dart';
+import 'package:inscore_app/features/leaderboard/presentation/leaderboard_body.dart';
 import 'package:inscore_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 
@@ -14,8 +15,17 @@ class LeaderboardScreen extends StatelessWidget {
     var tabFontColor = theme.colorScheme.onPrimary;
     var tabTextStyle = tabFontStyle!.copyWith(color: tabFontColor);
 
-    return ChangeNotifierProvider(
-      create: (context) => LeaderboardProvider(context.read<ApiService>()),
+    return MultiProvider(
+      providers: [
+        Provider(
+          create: (context) =>
+              LeaderboardRepository(context.read<ApiService>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              LeaderboardProvider(context.read<LeaderboardRepository>()),
+        ),
+      ],
       child: DefaultTabController(
         length: 2,
         child: Scaffold(

@@ -6,6 +6,9 @@ class SocialMediaSection extends StatelessWidget {
   final IconData iconData;
   final String username;
   final String followers;
+  final String engagementRate;
+  final String engagementPerPost;
+  final String reachRatio;
 
   const SocialMediaSection({
     Key? key,
@@ -14,6 +17,9 @@ class SocialMediaSection extends StatelessWidget {
     required this.iconData,
     required this.username,
     required this.followers,
+    required this.engagementRate,
+    required this.engagementPerPost,
+    required this.reachRatio,
   }) : super(key: key);
 
   @override
@@ -53,8 +59,8 @@ class SocialMediaSection extends StatelessWidget {
                     child: Text(
                       username,
                       style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -64,7 +70,7 @@ class SocialMediaSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '4500',
+                        followers,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -87,11 +93,17 @@ class SocialMediaSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _MetricItem(value: '1965', label: 'Engagement Rate'),
+                    _MetricItem(
+                      value: engagementRate,
+                      label: 'Engagement Rate',
+                    ),
                     _Divider(),
-                    _MetricItem(value: '1965', label: 'Engagement per Post'),
+                    _MetricItem(
+                      value: engagementPerPost,
+                      label: 'Engagement per Post',
+                    ),
                     _Divider(),
-                    _MetricItem(value: '1965', label: 'Reach Ratio'),
+                    _MetricItem(value: reachRatio, label: 'Reach Ratio'),
                   ],
                 ),
               ),

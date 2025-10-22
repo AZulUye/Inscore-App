@@ -47,28 +47,7 @@ class PointCard extends StatelessWidget {
           ),
         ],
       ),
-      // child: Column(
-      //   mainAxisAlignment: MainAxisAlignment.center,
-      //   children: [
-      //     Icon(icon, size: 24, color: Colors.grey.shade600),
-      //     const SizedBox(height: 8),
-      //     Text(
-      //       score,
-      //       style: const TextStyle(
-      //         fontWeight: FontWeight.bold,
-      //         fontSize: 20,
-      //       ),
-      //     ),
-      //     const SizedBox(height: 4),
-      //     Text(
-      //       label,
-      //       style: TextStyle(
-      //         color: Colors.grey.shade600,
-      //         fontSize: 12,
-      //       ),
-      //     ),
-      //   ],
-      // ),
+      
     );
   }
 }

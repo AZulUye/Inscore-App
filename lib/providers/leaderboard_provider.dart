@@ -1,19 +1,18 @@
 import 'package:inscore_app/core/base_viewmodel.dart';
 import 'package:inscore_app/core/exception_handler.dart';
-import 'package:inscore_app/features/leaderboard/data/models/leaderboard_response.dart';
-// import 'package:inscore_app/features/leaderboard/data/mock_api_service.dart';
-import 'package:inscore_app/services/api_service.dart';
+import 'package:inscore_app/features/leaderboard/data/leaderboard_repository.dart';
+import 'package:inscore_app/features/leaderboard/domain/user_score_model.dart';
 
 class LeaderboardProvider extends BaseViewModel {
-  final ApiService _apiService;
+  final LeaderboardRepository _repository;
 
-  LeaderboardProvider(this._apiService);
+  LeaderboardProvider(this._repository);
 
-  List<UserScore>? _userScores;
+  List<UserScoreModel>? _userScores;
 
-  List<UserScore> get userScores {
+  List<UserScoreModel> get userScores {
     if (_userScores == null) return [];
-    final sortedList = List<UserScore>.from(_userScores!);
+    final sortedList = List<UserScoreModel>.from(_userScores!);
     sortedList.sort((a, b) => b.score.compareTo(a.score));
     return sortedList;
   }
@@ -21,7 +20,7 @@ class LeaderboardProvider extends BaseViewModel {
   Future<void> fetchLeaderboard(String period) async {
     try {
       setLoading(true);
-      final result = await _apiService.fetchLeaderboard(period);
+      final result = await _repository.fetchLeaderboard(period);
       _userScores = result;
       setSuccess();
     } catch (e) {

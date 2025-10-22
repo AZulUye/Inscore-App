@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:inscore_app/features/leaderboard/data/models/leaderboard_response.dart';
 import 'package:logger/logger.dart';
 import '../core/constants.dart';
 import '../core/exception_handler.dart';
+import '../features/profile/data/models/score_response.dart';
+import '../features/profile/data/models/response_metric_facebook.dart';
+import '../features/profile/data/models/response_metric_instagram.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -240,17 +242,35 @@ class ApiService {
     }
   }
 
-  // fetch all user scores for leaderboard screen
-  Future<List<UserScore>> fetchLeaderboard(String period) async {
+  //fetch user score for profile screens
+  Future<Data> fetchUserScore() async {
     try {
-      final response = await _dio.get("/leaderboard/$period");
+      final response = await _dio.get('/score');
+      final result = ResponseScore.fromJson(response.data);
+      return result.data;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
 
-      final result = LeaderboardResponse.fromJson(response.data);
+  Future<DataInstagram> fetchInstagramMetrics() async {
+    try {
+      final response = await _dio.get('/instagram/metrics');
+      final result = ResponseMetricInstagram.fromJson(response.data);
+      return result.data;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
 
-      if (!result.success) {
-        throw ExceptionHandler.handleGenericException(result.message);
-      }
-
+  Future<DataFacebook> fetchFacebookMetrics() async {
+    try {
+      final response = await _dio.get('/facebook/metrics');
+      final result = ResponseMetricFacebook.fromJson(response.data);
       return result.data;
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inscore_app/core/enums.dart';
-import 'package:inscore_app/features/leaderboard/presentation/leaderboard_provider.dart';
+import 'package:inscore_app/providers/leaderboard_provider.dart';
 import 'package:provider/provider.dart';
 
 class LeaderboardBody extends StatefulWidget {
