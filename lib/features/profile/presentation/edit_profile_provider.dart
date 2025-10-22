@@ -1,5 +1,6 @@
 import 'package:inscore_app/core/base_viewmodel.dart';
 import 'package:inscore_app/models/user.dart';
+import 'package:inscore_app/providers/auth_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -8,6 +9,9 @@ class EditProfileProvider extends BaseViewModel {
   String _username = '';
   String _email = '';
   File? _profileImage;
+  final AuthProvider _authProvider;
+
+  EditProfileProvider(this._authProvider);
 
   User? get currentUser => _currentUser;
   String get username => _username;
@@ -67,22 +71,15 @@ class EditProfileProvider extends BaseViewModel {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      // Call AuthProvider updateProfile method
+      await _authProvider.updateProfile(
+        name: _username.trim(),
+        email: _email.trim(),
+        avatarPath: _profileImage?.path,
+      );
 
-      // Update user data
-      if (_currentUser != null) {
-        _currentUser = _currentUser!.copyWith(
-          name: _username.trim(),
-          email: _email.trim(),
-          updatedAt: DateTime.now(),
-          // Note: In a real app, you would upload the image and get the URL
-          // For now, we'll keep the existing avatar or set a placeholder
-          avatar: _profileImage != null
-              ? 'https://via.placeholder.com/150'
-              : _currentUser!.avatar,
-        );
-      }
+      // Update current user data from AuthProvider
+      _currentUser = _authProvider.user;
 
       setSuccess();
       notifyListeners();

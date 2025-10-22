@@ -123,4 +123,27 @@ class AuthProvider extends BaseViewModel {
       rethrow;
     }
   }
+
+  Future<void> updateProfile({
+    required String name,
+    required String email,
+    String? avatarPath,
+  }) async {
+    try {
+      setLoading(true);
+      final response = await _authService.updateProfile(
+        name: name,
+        email: email,
+        avatarPath: avatarPath,
+      );
+
+      // Update user data with response
+      _user = User.fromJson(response);
+      setSuccess();
+    } catch (e) {
+      final errorMessage = ExceptionHandler.getErrorMessage(e);
+      setError(errorMessage);
+      rethrow;
+    }
+  }
 }

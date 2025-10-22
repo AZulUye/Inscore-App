@@ -157,6 +157,26 @@ class AuthRepository {
     }
   }
 
+  Future<Map<String, dynamic>> updateProfile({
+    required String name,
+    required String email,
+    String? avatarPath,
+  }) async {
+    try {
+      // Use the full method that supports avatar upload
+      final response = await _apiService.updateProfile(
+        name: name,
+        email: email,
+        avatarPath: avatarPath,
+      );
+      return response;
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
   void setAuthorizationHeader(String token) =>
       _apiService.setAuthorizationHeader(token);
 

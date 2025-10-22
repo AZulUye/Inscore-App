@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inscore_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
-import 'package:inscore_app/providers/user_provider.dart';
 import 'edit_profile_provider.dart';
-import 'profile_provider.dart';
 import 'widget/form_widgets.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -25,13 +24,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Initialize with current user data from UserProvider
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = context.read<EditProfileProvider>();
-      final userProvider = context.read<UserProvider>();
+      final authProvider = context.read<AuthProvider>();
 
       // Check if user is authenticated and load user data
-      await userProvider.isAuthenticated();
+      await authProvider.isAuthenticated();
 
       // Use current user data if available, otherwise use empty user
-      final currentUser = userProvider.user ?? User.empty();
+      final currentUser = authProvider.user ?? User.empty();
       provider.initProfile(currentUser);
       _usernameController.text = currentUser.name;
       _emailController.text = currentUser.email;
@@ -90,12 +89,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               backgroundColor: Colors.grey.shade300,
                               backgroundImage: provider.profileImage != null
                                   ? FileImage(provider.profileImage!)
-                                  : (provider.currentUser?.avatar != null
-                                            ? NetworkImage(
-                                                provider.currentUser!.avatar!,
-                                              )
-                                            : null)
-                                        as ImageProvider?,
+                                  : _getValidAvatarImage(
+                                      provider.currentUser?.avatar,
+                                    ),
                               child:
                                   provider.profileImage == null &&
                                       (provider.currentUser?.avatar == null ||
@@ -209,34 +205,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       await provider.updateProfile();
       if (mounted) {
-        // Update the UserProvider and ProfileProvider with the updated user data
-        final updatedUser = provider.getUpdatedUser();
-        if (updatedUser != null) {
-          // Update UserProvider
-          final userProvider = context.read<UserProvider>();
-          await userProvider.updateProfile(updatedUser);
+        // Profile update successful - AuthProvider already updated
+        // No need to update ProfileProvider here as it will be refreshed when navigating to profile screen
 
-          // Update ProfileProvider
-          final profileProvider = context.read<ProfileProvider>();
-          profileProvider.updateUser(updatedUser);
-        }
-
-        ScaffoldMessenger.of(this.context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile berhasil diupdate'),
-            backgroundColor: Colors.green,
-          ),
-        );
         if (mounted) {
-          this.context.go(AppRoutes.profile);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile berhasil diupdate'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          context.go(AppRoutes.profile);
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(this.context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
+    }
+  }
+
+  ImageProvider? _getValidAvatarImage(String? avatarUrl) {
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      return null;
+    }
+
+    // Check if URL is valid and not a 404
+    try {
+      final uri = Uri.parse(avatarUrl);
+      if (!uri.hasScheme || (!uri.scheme.startsWith('http'))) {
+        return null;
+      }
+
+      return NetworkImage(avatarUrl);
+    } catch (e) {
+      // Invalid avatar URL, return null to show default
+      return null;
     }
   }
 }
