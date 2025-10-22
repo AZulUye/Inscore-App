@@ -112,6 +112,26 @@ class AuthProvider extends BaseViewModel {
     return _user != null;
   }
 
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    try {
+      setLoading(true);
+      await _authService.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        newPasswordConfirmation: newPasswordConfirmation,
+      );
+      setSuccess();
+    } catch (e) {
+      final errorMessage = ExceptionHandler.getErrorMessage(e);
+      setError(errorMessage);
+      rethrow;
+    }
+  }
+
   Future<void> forgotPassword(String email) async {
     try {
       setLoading(true);

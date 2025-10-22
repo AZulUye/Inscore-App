@@ -22,14 +22,11 @@ class PlatformSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Row(
-          children: platforms.map((platform) {
-            return Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: PlatformCard(platform: platform),
-              ),
-            );
-          }).toList(),
+          children: [
+            Expanded(child: PlatformCard(platform: platforms[0])),
+            SizedBox(width: 24),
+            Expanded(child: PlatformCard(platform: platforms[1])),
+          ],
         ),
       ],
     );

@@ -10,7 +10,8 @@ class WeeklyComparisonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isPositive = comparison.deltaPercent >= 0;
-    final deltaText = '${isPositive ? '+' : ''}${comparison.deltaPercent.toStringAsFixed(1)}% from last week';
+    final deltaText =
+        '${isPositive ? '+' : ''}${comparison.deltaPercent.toStringAsFixed(2)}% from last week';
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -37,7 +38,7 @@ class WeeklyComparisonCard extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      comparison.lastWeekAvgScore.toInt().toString(),
+                      comparison.lastWeekAvgScore.toStringAsFixed(2),
                       style: theme.textTheme.displayMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -61,7 +62,7 @@ class WeeklyComparisonCard extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      comparison.thisWeekAvgScore.toInt().toString(),
+                      comparison.thisWeekAvgScore.toStringAsFixed(2),
                       style: theme.textTheme.displayMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isPositive ? Colors.green : Colors.red,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:inscore_app/core/app_routes.dart';
+import 'package:provider/provider.dart';
+
+import '../../../core/app_routes.dart';
+import '../../../providers/auth_provider.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -95,17 +98,95 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
               const SizedBox(height: 28),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Password Dirubah')),
-                    );
-                  },
-                  child: const Text('Change'),
-                ),
+              Consumer<AuthProvider>(
+                builder: (context, auth, _) {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: auth.isLoading
+                          ? null
+                          : () async {
+                              FocusScope.of(context).unfocus();
+
+                              final oldPwd = _oldPasswordController.text.trim();
+                              final newPwd = _newPasswordController.text.trim();
+                              final confirmPwd = _confirmPasswordController.text
+                                  .trim();
+
+                              if (oldPwd.isEmpty ||
+                                  newPwd.isEmpty ||
+                                  confirmPwd.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Semua kolom wajib diisi.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+                              if (newPwd.length < 6) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Kata sandi baru minimal 6 karakter.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+                              if (newPwd != confirmPwd) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Konfirmasi kata sandi salah.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              try {
+                                await context
+                                    .read<AuthProvider>()
+                                    .changePassword(
+                                      currentPassword: oldPwd,
+                                      newPassword: newPwd,
+                                      newPasswordConfirmation: confirmPwd,
+                                    );
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Kata sandi berhasil diubah.',
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                context.go(AppRoutes.settings);
+                              } catch (e) {
+                                if (!context.mounted) return;
+                                final msg =
+                                    auth.error ?? 'Gagal mengubah kata sandi.';
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(msg),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                      child: auth.isLoading
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Change'),
+                    ),
+                  );
+                },
               ),
             ],
           ),
