@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'widgets/forgot_password_sheet.dart';
 
 import '../../../core/app_routes.dart';
-import '../../../providers/user_provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../shared/loading_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,11 +27,46 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _showForgotPasswordModal() async {
+    final resultEmail = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) =>
+          ForgotPasswordSheet(initialEmail: _emailController.text.trim()),
+    );
+
+    if (!mounted) return;
+    if (resultEmail != null) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      try {
+        await authProvider.forgotPassword(resultEmail);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Pastikan email terdaftar adalah email aktif, temporary password telah dikirim ke $resultEmail',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        final msg = authProvider.error ?? 'Permintaan reset gagal';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
-      await userProvider.login(
+      await authProvider.login(
         _emailController.text.trim(),
         _passwordController.text,
       );
@@ -39,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
       // Ambil pesan error dari provider jika ada
-      final errorMsg = userProvider.error ?? 'Login gagal';
+      final errorMsg = authProvider.error ?? 'Login gagal';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
       );
@@ -51,9 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       body: SafeArea(
-        child: Consumer<UserProvider>(
-          builder: (context, userProvider, child) {
-            if (userProvider.isLoading) {
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            if (authProvider.isLoading) {
               return const LoadingWidget();
             }
             return SingleChildScrollView(
@@ -217,9 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 12),
                           Center(
                             child: TextButton(
-                              onPressed: () {
-                                // TODO: Implement forgot password
-                              },
+                              onPressed: _showForgotPasswordModal,
                               child: const Text('Lupa Kata Sandi'),
                             ),
                           ),

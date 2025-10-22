@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/app_routes.dart';
-import '../providers/user_provider.dart';
+import '../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       if (!mounted) return;
-      final isAuthed = await context.read<UserProvider>().isAuthenticated();
+      final isAuthed = await context.read<AuthProvider>().isAuthenticated();
       if (!mounted) return;
       context.go(isAuthed ? AppRoutes.home : AppRoutes.login);
     });

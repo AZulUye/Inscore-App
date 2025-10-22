@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/app_routes.dart';
-import '../../../providers/user_provider.dart';
+import '../../../providers/auth_provider.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -20,7 +20,7 @@ class DashboardScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              Provider.of<UserProvider>(context, listen: false).logout();
+              Provider.of<AuthProvider>(context, listen: false).logout();
               context.go(AppRoutes.main);
             },
           ),
@@ -31,8 +31,8 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Consumer<UserProvider>(
-              builder: (context, userProvider, child) {
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
                 return Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -60,7 +60,7 @@ class DashboardScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                userProvider.user?.email ?? 'user@example.com',
+                                authProvider.user?.email ?? 'user@example.com',
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: Colors.grey[600]),
                               ),
