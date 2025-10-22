@@ -13,6 +13,7 @@ dependencies:
   # UI & Icons
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.10+1
+  google_fonts: ^6.1.0
 
   # State Management
   provider: ^6.0.5
@@ -35,6 +36,7 @@ dependencies:
   connectivity_plus: ^7.0.0
   logger: ^2.0.2
   image_picker: ^1.0.7
+  fl_chart: ^0.69.0
 
   # Code Generation
   freezed_annotation: ^2.4.1

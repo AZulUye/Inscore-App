@@ -6,6 +6,7 @@ import 'widgets/forgot_password_sheet.dart';
 import '../../../core/app_routes.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../shared/loading_widget.dart';
+import '../../../shared/custom_text.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
       if (!mounted) return;
-      context.go(AppRoutes.dashboard);
+      context.go(AppRoutes.home);
     } catch (e) {
       if (!mounted) return;
       // Ambil pesan error dari provider jika ada
@@ -121,11 +122,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            CustomText(
                               'Masuk ke akun bisnis Anda untuk mengelola penilaian holistik dan data kredibilitas.',
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              style: TextStyle(
                                 color: theme.colorScheme.onPrimaryContainer
-                                    .withValues(alpha: 0.8),
+                                    .withOpacity(0.8),
+                                fontSize: 14,
                               ),
                             ),
                           ],
@@ -144,13 +146,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // Email bisnis label + field
-                          Text(
+                          CustomText(
                             'Email Bisnis',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(
-                                alpha: 0.9,
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.9,
                               ),
                               fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -186,13 +189,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 16),
 
                           // Password label + field
-                          Text(
+                          CustomText(
                             'Kata Sandi',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(
-                                alpha: 0.9,
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.9,
                               ),
                               fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
                           ),
                           const SizedBox(height: 8),

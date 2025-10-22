@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/app_routes.dart';
+import '../shared/custom_text.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -143,11 +144,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  CustomText(
                     _pages[_current].body,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.8),
                       height: 1.4,
+                      fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 18),

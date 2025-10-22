@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/theme_provider.dart';
 import '../core/exception_handler.dart';
 import '../core/app_routes.dart';
+import '../shared/custom_text.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -12,7 +13,13 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: CustomText(
+          'Settings',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -164,7 +171,7 @@ class SettingsScreen extends StatelessWidget {
         // Section Content
         Card(
           elevation: 0,
-          color: Colors.grey.shade50,
+          color: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

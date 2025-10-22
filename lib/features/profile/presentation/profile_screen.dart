@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
-import 'package:inscore_app/providers/user_provider.dart';
+import 'package:inscore_app/providers/auth_provider.dart';
 import 'package:inscore_app/features/profile/presentation/widget/point_card.dart';
 import '../presentation/widget/social_media_section.dart';
 import '../presentation/profile_provider.dart';
@@ -19,17 +19,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize with user data from UserProvider
+    // Initialize with user data from AuthProvider
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final profileProvider = context.read<ProfileProvider>();
-      final userProvider = context.read<UserProvider>();
+      final authProvider = context.read<AuthProvider>();
 
       // Check if user is authenticated and load user data
-      await userProvider.isAuthenticated();
+      final isAuth = await authProvider.isAuthenticated();
 
-      // Use user data from UserProvider if available
-      if (userProvider.user != null) {
-        profileProvider.initProfile(userProvider.user!);
+      // Use user data from AuthProvider if available
+      if (isAuth && authProvider.user != null) {
+        profileProvider.initProfile(authProvider.user!);
       } else {
         // If no user is logged in, initialize with empty user
         profileProvider.initProfile(User.empty());
@@ -58,13 +58,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ProfileProvider, UserProvider>(
-      builder: (context, profileProvider, userProvider, child) {
-        // Show loading indicator if any provider is loading or user data is not available
+    return Consumer<ProfileProvider>(
+      builder: (context, profileProvider, child) {
+        // Show loading indicator if profile provider is loading or user data is not available
         if (profileProvider.isLoading ||
-            userProvider.isLoading ||
-            profileProvider.currentUser == null ||
-            userProvider.user == null) {
+            profileProvider.currentUser == null) {
           return Scaffold(
             body: Center(
               child: Column(
