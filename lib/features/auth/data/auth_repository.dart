@@ -114,7 +114,7 @@ class AuthRepository {
   }) async {
     try {
       final response = await _apiService.post(
-        '/change-password',
+        '/profile/change-password',
         data: {
           'current_password': currentPassword,
           'new_password': newPassword,

@@ -84,7 +84,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               itemCount: _pages.length,
               onPageChanged: (i) => setState(() => _current = i),
               itemBuilder: (context, index) {
-                final iconColor = theme.colorScheme.onPrimaryContainer;
+                final iconColor = theme.colorScheme.primary;
                 return Center(
                   child: Icon(_pages[index].icon, size: 160, color: iconColor),
                 );

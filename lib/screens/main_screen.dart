@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inscore_app/features/home/presentation/dashboard_screen.dart';
 import 'package:inscore_app/features/leaderboard/presentation/leaderboard_screen.dart';
 import 'package:inscore_app/features/home/presentation/home_screen.dart';
 import 'package:inscore_app/screens/settings_screen.dart';
