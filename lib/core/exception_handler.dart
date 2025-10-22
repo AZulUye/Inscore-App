@@ -62,12 +62,8 @@ class ExceptionHandler {
             final data = dioException.response?.data;
             String message = 'Validation error';
             if (data is Map<String, dynamic>) {
-              if (data['message'] is String &&
-                  (data['message'] as String).isNotEmpty) {
-                message = data['message'];
-              } else if (data['errors'] is Map<String, dynamic>) {
-                // Flatten first error message
-                final errors = data['errors'] as Map<String, dynamic>;
+              if (data['error'] is Map<String, dynamic>) {
+                final errors = data['error'] as Map<String, dynamic>;
                 final firstKey = errors.keys.isNotEmpty
                     ? errors.keys.first
                     : null;
@@ -75,7 +71,11 @@ class ExceptionHandler {
                 if (firstVal is List && firstVal.isNotEmpty) {
                   message = firstVal.first.toString();
                 }
-              }
+              } else
+              if (data['message'] is String &&
+                  (data['message'] as String).isNotEmpty) {
+                message = data['message'];
+              } 
             }
             return ValidationException(
               message,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/theme_provider.dart';
+import '../core/exception_handler.dart';
 import '../core/app_routes.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -184,25 +186,38 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showSignOutDialog(BuildContext context) {
+  void _showSignOutDialog(BuildContext outerContext) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
+      context: outerContext,
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Sign Out'),
           content: const Text('Are you sure you want to sign out?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // TODO: Implement sign out logic
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Signed out successfully')),
-                );
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                try {
+                  await outerContext.read<AuthProvider>().logout();
+
+                  if (outerContext.mounted) {
+                    ScaffoldMessenger.of(outerContext).showSnackBar(
+                      const SnackBar(content: Text('Signed out successfully')),
+                    );
+                    outerContext.go(AppRoutes.login);
+                  }
+                } catch (e) {
+                  final msg = ExceptionHandler.getErrorMessage(e);
+                  if (outerContext.mounted) {
+                    ScaffoldMessenger.of(
+                      outerContext,
+                    ).showSnackBar(SnackBar(content: Text(msg)));
+                  }
+                }
               },
               child: const Text(
                 'Sign Out',

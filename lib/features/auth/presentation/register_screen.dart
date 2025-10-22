@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/app_routes.dart';
-import '../../../providers/user_provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../shared/loading_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -35,9 +35,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
-      await userProvider.register(
+      await authProvider.register(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -56,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      final errorMsg = userProvider.error ?? 'Pendaftaran gagal';
+      final errorMsg = authProvider.error ?? 'Pendaftaran gagal';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
       );
@@ -68,9 +68,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       body: SafeArea(
-        child: Consumer<UserProvider>(
-          builder: (context, userProvider, child) {
-            if (userProvider.isLoading) {
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            if (authProvider.isLoading) {
               return const LoadingWidget();
             }
             return SingleChildScrollView(

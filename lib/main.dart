@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:inscore_app/features/auth/data/auth_repository.dart';
 import 'package:inscore_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'core/app_theme.dart';
 import 'core/app_routes.dart';
 import 'providers/user_provider.dart';
+import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 
 void main() {
@@ -18,7 +20,13 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (_) => ApiService()),
+        Provider<AuthRepository>(
+          create: (context) => AuthRepository(context.read<ApiService>()),
+        ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(context.read<AuthRepository>()),
+        ),
         ChangeNotifierProvider(
           create: (context) => UserProvider(context.read<ApiService>()),
         ),
