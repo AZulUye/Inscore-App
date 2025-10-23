@@ -95,7 +95,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child:
                                   provider.profileImage == null &&
                                       (provider.currentUser?.avatar == null ||
-                                          provider.currentUser!.avatar!.isEmpty)
+                                          (provider
+                                                  .currentUser
+                                                  ?.avatar
+                                                  ?.isEmpty ??
+                                              true))
                                   ? const Icon(
                                       Icons.person,
                                       size: 50,
@@ -205,18 +209,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       await provider.updateProfile();
       if (mounted) {
-        // Profile update successful - AuthProvider already updated
-        // No need to update ProfileProvider here as it will be refreshed when navigating to profile screen
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile berhasil diupdate'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          context.go(AppRoutes.profile);
-        }
+        // Profile update successful - AuthProvider already updated with new user data
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile berhasil diupdate'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.go(AppRoutes.profile);
       }
     } catch (e) {
       if (mounted) {
@@ -239,7 +239,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return null;
       }
 
-      return NetworkImage(avatarUrl);
+      // Add cache-busting parameter to force reload of updated avatar
+      final cacheBustingUrl =
+          '$avatarUrl?t=${DateTime.now().millisecondsSinceEpoch}';
+
+      return NetworkImage(cacheBustingUrl);
     } catch (e) {
       // Invalid avatar URL, return null to show default
       return null;
