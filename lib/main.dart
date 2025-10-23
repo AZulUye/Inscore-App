@@ -9,7 +9,9 @@ import 'providers/user_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/leaderboard_provider.dart';
+import 'providers/social_media_provider.dart';
 import 'features/leaderboard/data/leaderboard_repository.dart';
+import 'features/profile/data/profile_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +34,9 @@ class MainApp extends StatelessWidget {
           create: (context) =>
               LeaderboardRepository(context.read<ApiService>()),
         ),
+        Provider(
+          create: (context) => ProfileRepository(context.read<ApiService>()),
+        ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
           create: (context) => AuthProvider(context.read<AuthRepository>()),
@@ -42,6 +47,10 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) =>
               LeaderboardProvider(context.read<LeaderboardRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              SocialMediaProvider(context.read<ProfileRepository>()),
         ),
       ],
       child: Consumer<ThemeProvider>(

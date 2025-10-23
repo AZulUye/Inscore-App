@@ -57,9 +57,9 @@ class Data {
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     businessId: json["business_id"],
     date: DateTime.parse(json["date"]),
-    instagramScore: json["instagram_score"],
-    facebookScore: json["facebook_score"],
-    finalScore: json["final_score"],
+    instagramScore: (json["instagram_score"] ?? 0).toDouble(),
+    facebookScore: (json["facebook_score"] ?? 0).toDouble(),
+    finalScore: (json["final_score"] ?? 0).toDouble(),
     updatedAt: DateTime.parse(json["updated_at"]),
     createdAt: DateTime.parse(json["created_at"]),
     id: json["id"],

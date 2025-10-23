@@ -4,10 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
 import 'package:inscore_app/providers/auth_provider.dart';
-import 'package:inscore_app/services/api_service.dart';
+import '../data/profile_repository.dart';
+import '../../../services/api_service.dart';
 import 'package:inscore_app/features/profile/presentation/widget/point_card.dart';
 import '../presentation/widget/social_media_section.dart';
-import '../presentation/profile_provider.dart';
+import '../../../providers/profile_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -36,10 +37,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return null;
   }
 
+  Widget _buildAvatarWithLoading(String? avatarUrl) {
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      return const Center(
+        child: Icon(Icons.person, size: 120, color: Colors.white),
+      );
+    }
+
+    // Check if URL is valid
+    try {
+      final uri = Uri.parse(avatarUrl);
+      if (!uri.hasScheme || (!uri.scheme.startsWith('http'))) {
+        return const Center(
+          child: Icon(Icons.person, size: 120, color: Colors.white),
+        );
+      }
+
+      // Add cache-busting parameter
+      final cacheBustingUrl =
+          '$avatarUrl?t=${DateTime.now().millisecondsSinceEpoch}';
+
+      return Image.network(
+        cacheBustingUrl,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) {
+            // Image loaded successfully
+            return child;
+          }
+          // Image is still loading - show only loading indicator
+          return Container(
+            color: Colors.greenAccent,
+            width: double.infinity,
+            height: double.infinity,
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 3,
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          // Image failed to load
+          return const Center(
+            child: Icon(Icons.person, size: 120, color: Colors.white),
+          );
+        },
+      );
+    } catch (e) {
+      // Invalid URL
+      return const Center(
+        child: Icon(Icons.person, size: 120, color: Colors.white),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ProfileProvider(context.read<ApiService>()),
+      create: (context) =>
+          ProfileProvider(ProfileRepository(context.read<ApiService>())),
       child: Consumer<ProfileProvider>(
         builder: (context, profileProvider, child) {
           // Initialize profile data if not already initialized
@@ -104,27 +164,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // Background container with profile image
                         Container(
                           height: 320,
-                          decoration: BoxDecoration(
-                            color: Colors.greenAccent,
-                            image: _getValidAvatarImage(
-                              profileProvider.currentUser?.avatar,
-                            ),
+                          decoration: BoxDecoration(color: Colors.greenAccent),
+                          child: _buildAvatarWithLoading(
+                            profileProvider.currentUser?.avatar,
                           ),
-                          child:
-                              profileProvider.currentUser?.avatar == null ||
-                                  (profileProvider
-                                          .currentUser
-                                          ?.avatar
-                                          ?.isEmpty ??
-                                      true)
-                              ? const Center(
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 120,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : null,
                         ),
                         // Overlay gradient for better text readability
                         Container(
@@ -299,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisCount: 2,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 2.0,
+                            childAspectRatio: 2.2,
                             padding: EdgeInsets.zero,
                             children: [
                               PointCard(
@@ -340,35 +383,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       ),
     );
-  }
-
-  DecorationImage? _getValidAvatarImage(String? avatarUrl) {
-    if (avatarUrl == null || avatarUrl.isEmpty) {
-      return null;
-    }
-
-    // Check if URL is valid and not a 404
-    try {
-      final uri = Uri.parse(avatarUrl);
-      if (!uri.hasScheme || (!uri.scheme.startsWith('http'))) {
-        return null;
-      }
-
-      // Add cache-busting parameter to force reload of updated avatar
-      final cacheBustingUrl =
-          '$avatarUrl?t=${DateTime.now().millisecondsSinceEpoch}';
-
-      return DecorationImage(
-        image: NetworkImage(cacheBustingUrl),
-        fit: BoxFit.cover,
-        onError: (exception, stackTrace) {
-          // Handle error silently, will show default background
-          // Avatar image failed to load
-        },
-      );
-    } catch (e) {
-      // Invalid avatar URL, return null to show default
-      return null;
-    }
   }
 }

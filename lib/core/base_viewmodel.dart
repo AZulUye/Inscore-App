@@ -4,10 +4,10 @@ import 'enums.dart';
 abstract class BaseViewModel extends ChangeNotifier {
   ViewState _state = ViewState.idle;
   String _errorMessage = '';
-  
+
   ViewState get state => _state;
   String get errorMessage => _errorMessage;
-  
+
   bool get isIdle => _state == ViewState.idle;
   bool get isLoading => _state == ViewState.loading;
   bool get isError => _state == ViewState.error;
@@ -15,7 +15,9 @@ abstract class BaseViewModel extends ChangeNotifier {
 
   void setState(ViewState newState) {
     _state = newState;
-    notifyListeners();
+    if (hasListeners) {
+      notifyListeners();
+    }
   }
 
   void setLoading(bool bool) {
