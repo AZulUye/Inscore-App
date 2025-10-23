@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inscore_app/core/enums.dart';
+import 'package:inscore_app/providers/auth_provider.dart';
 import 'package:inscore_app/providers/leaderboard_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +26,10 @@ class _LeaderboardBodyState extends State<LeaderboardBody> {
 
   @override
   Widget build(BuildContext context) {
+    var auth = context.read<AuthProvider>();
+    var currentUser = auth.user;
+    var userName = currentUser!.name;
+
     return Consumer<LeaderboardProvider>(
       builder: (context, model, _) {
         return switch (model.state) {
@@ -72,7 +77,10 @@ class _LeaderboardBodyState extends State<LeaderboardBody> {
                     ),
                   ],
                 ),
-                title: Text(data.name, overflow: TextOverflow.ellipsis),
+                title: Text(
+                  data.name == userName ? "You (${data.name})" : data.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: Text(
                   data.score.toStringAsFixed(2),
                   style: Theme.of(
