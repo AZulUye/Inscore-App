@@ -299,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisCount: 2,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 2.0,
+                            childAspectRatio: 2.2,
                             padding: EdgeInsets.zero,
                             children: [
                               PointCard(
