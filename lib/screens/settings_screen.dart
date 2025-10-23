@@ -90,36 +90,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 24),
 
-          // Notification Section
-          _buildSection(
-            context,
-            icon: Icons.notifications,
-            title: 'Notification',
-            children: [
-              Consumer<ThemeProvider>(
-                builder: (context, themeProvider, child) {
-                  return SwitchListTile(
-                    title: const Text('App Notification'),
-                    value:
-                        true, // You can add notification preference to theme provider
-                    onChanged: (value) {
-                      // TODO: Implement notification toggle
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Notifications ${value ? 'enabled' : 'disabled'}',
-                          ),
-                        ),
-                      );
-                    },
-                    activeColor: Theme.of(context).primaryColor,
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
           // Appearance Section (Hidden but keeping dark mode toggle)
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
