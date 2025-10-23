@@ -373,6 +373,50 @@ class ApiService {
     }
   }
 
+  // Instagram connection endpoint
+  Future<Map<String, dynamic>> connectInstagram() async {
+    try {
+      final response = await _dio.get('/instagram/connect');
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to get Instagram connect URL',
+        );
+      }
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  // Facebook connection endpoint
+  Future<Map<String, dynamic>> connectFacebook() async {
+    try {
+      final response = await _dio.get('/facebook/connect');
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to get Facebook connect URL',
+        );
+      }
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
   // Add authorization header
   void setAuthorizationHeader(String token) {
     _dio.options.headers['Authorization'] = 'Bearer $token';

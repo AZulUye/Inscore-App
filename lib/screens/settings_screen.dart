@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
+import '../providers/social_media_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/theme_provider.dart';
@@ -7,9 +8,14 @@ import '../core/exception_handler.dart';
 import '../core/app_routes.dart';
 import '../shared/custom_text.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,27 +45,31 @@ class SettingsScreen extends StatelessWidget {
                 title: 'Change Password',
                 onTap: () => context.go(AppRoutes.changePassword),
               ),
-              _buildListTile(
-                context,
-                title: 'Instagram',
-                onTap: () {
-                  // TODO: Navigate to Instagram integration
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Instagram integration coming soon'),
-                    ),
+              Consumer<SocialMediaProvider>(
+                builder: (context, socialMediaProvider, child) {
+                  return _buildSocialMediaTile(
+                    context,
+                    title: 'Instagram',
+                    icon: Icons.camera_alt,
+                    iconColor: Colors.pink,
+                    isConnected: socialMediaProvider.isInstagramConnected,
+                    isLoading: socialMediaProvider.isInstagramConnecting,
+                    onToggle: () =>
+                        socialMediaProvider.connectInstagram(context),
                   );
                 },
               ),
-              _buildListTile(
-                context,
-                title: 'Facebook',
-                onTap: () {
-                  // TODO: Navigate to Facebook integration
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Facebook integration coming soon'),
-                    ),
+              Consumer<SocialMediaProvider>(
+                builder: (context, socialMediaProvider, child) {
+                  return _buildSocialMediaTile(
+                    context,
+                    title: 'Facebook',
+                    icon: Icons.facebook,
+                    iconColor: Colors.blue,
+                    isConnected: socialMediaProvider.isFacebookConnected,
+                    isLoading: socialMediaProvider.isFacebookConnecting,
+                    onToggle: () =>
+                        socialMediaProvider.connectFacebook(context),
                   );
                 },
               ),
@@ -190,6 +200,63 @@ class SettingsScreen extends StatelessWidget {
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
+    );
+  }
+
+  Widget _buildSocialMediaTile(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color iconColor,
+    required bool isConnected,
+    bool isLoading = false,
+    required VoidCallback onToggle,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: iconColor.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+      title: Text(title),
+      subtitle: Text(
+        isConnected ? 'Connected' : 'Not Connected',
+        style: TextStyle(
+          color: isConnected ? Colors.green : Colors.grey.shade600,
+          fontSize: 12,
+        ),
+      ),
+      trailing: ElevatedButton(
+        onPressed: isLoading ? null : onToggle,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isConnected ? Colors.red : Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          minimumSize: Size.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                isConnected ? 'Disconnect' : 'Connect',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+      ),
     );
   }
 

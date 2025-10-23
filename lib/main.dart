@@ -9,6 +9,7 @@ import 'providers/user_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/leaderboard_provider.dart';
+import 'providers/social_media_provider.dart';
 import 'features/leaderboard/data/leaderboard_repository.dart';
 
 void main() async {
@@ -42,6 +43,9 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) =>
               LeaderboardProvider(context.read<LeaderboardRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SocialMediaProvider(context.read<ApiService>()),
         ),
       ],
       child: Consumer<ThemeProvider>(
