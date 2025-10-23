@@ -66,27 +66,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Image loaded successfully
             return child;
           }
-          // Image is still loading
-          return Stack(
-            children: [
-              // Background color
-              Container(
-                color: Colors.greenAccent,
-                width: double.infinity,
-                height: double.infinity,
+          // Image is still loading - show only loading indicator
+          return Container(
+            color: Colors.greenAccent,
+            width: double.infinity,
+            height: double.infinity,
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 3,
               ),
-              // Loading indicator
-              const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  strokeWidth: 3,
-                ),
-              ),
-              // Default icon
-              const Center(
-                child: Icon(Icons.person, size: 120, color: Colors.white),
-              ),
-            ],
+            ),
           );
         },
         errorBuilder: (context, error, stackTrace) {
