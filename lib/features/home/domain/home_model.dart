@@ -3,26 +3,20 @@ class HomeResponse {
   final String message;
   final HomeData? data;
 
-  HomeResponse({
-    required this.success,
-    required this.message,
-    this.data,
-  });
+  HomeResponse({required this.success, required this.message, this.data});
 
   factory HomeResponse.fromJson(Map<String, dynamic> json) {
     return HomeResponse(
       success: json['success'] as bool,
       message: json['message'] as String,
-      data: json['data'] != null ? HomeData.fromJson(json['data'] as Map<String, dynamic>) : null,
+      data: json['data'] != null
+          ? HomeData.fromJson(json['data'] as Map<String, dynamic>)
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data?.toJson(),
-    };
+    return {'success': success, 'message': message, 'data': data?.toJson()};
   }
 }
 
@@ -48,7 +42,9 @@ class HomeData {
           .map((e) => PlatformConnection.fromJson(e as Map<String, dynamic>))
           .toList(),
       today: TodayScore.fromJson(json['today'] as Map<String, dynamic>),
-      weeklyComparison: WeeklyComparison.fromJson(json['weeklyComparison'] as Map<String, dynamic>),
+      weeklyComparison: WeeklyComparison.fromJson(
+        json['weeklyComparison'] as Map<String, dynamic>,
+      ),
       charts: Charts.fromJson(json['charts'] as Map<String, dynamic>),
     );
   }
@@ -68,23 +64,14 @@ class UserInfo {
   final int id;
   final String name;
 
-  UserInfo({
-    required this.id,
-    required this.name,
-  });
+  UserInfo({required this.id, required this.name});
 
   factory UserInfo.fromJson(Map<String, dynamic> json) {
-    return UserInfo(
-      id: json['id'] as int,
-      name: json['name'] as String,
-    );
+    return UserInfo(id: json['id'] as int, name: json['name'] as String);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }
 
@@ -108,11 +95,7 @@ class PlatformConnection {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'platform': platform,
-      'connected': connected,
-      'account': account,
-    };
+    return {'platform': platform, 'connected': connected, 'account': account};
   }
 }
 
@@ -150,10 +133,7 @@ class PlatformScore {
   final String platform;
   final double score;
 
-  PlatformScore({
-    required this.platform,
-    required this.score,
-  });
+  PlatformScore({required this.platform, required this.score});
 
   factory PlatformScore.fromJson(Map<String, dynamic> json) {
     return PlatformScore(
@@ -163,10 +143,7 @@ class PlatformScore {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'platform': platform,
-      'score': score,
-    };
+    return {'platform': platform, 'score': score};
   }
 }
 
@@ -174,23 +151,14 @@ class Rank {
   final int position;
   final int total;
 
-  Rank({
-    required this.position,
-    required this.total,
-  });
+  Rank({required this.position, required this.total});
 
   factory Rank.fromJson(Map<String, dynamic> json) {
-    return Rank(
-      position: json['position'] as int,
-      total: json['total'] as int,
-    );
+    return Rank(position: json['position'] as int, total: json['total'] as int);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'position': position,
-      'total': total,
-    };
+    return {'position': position, 'total': total};
   }
 }
 
@@ -225,9 +193,7 @@ class WeeklyComparison {
 class Charts {
   final List<DailyScoreSeries> dailyScoreSeries;
 
-  Charts({
-    required this.dailyScoreSeries,
-  });
+  Charts({required this.dailyScoreSeries});
 
   factory Charts.fromJson(Map<String, dynamic> json) {
     return Charts(
@@ -248,10 +214,7 @@ class DailyScoreSeries {
   final String date;
   final double value;
 
-  DailyScoreSeries({
-    required this.date,
-    required this.value,
-  });
+  DailyScoreSeries({required this.date, required this.value});
 
   factory DailyScoreSeries.fromJson(Map<String, dynamic> json) {
     return DailyScoreSeries(
@@ -261,9 +224,6 @@ class DailyScoreSeries {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'date': date,
-      'value': value,
-    };
+    return {'date': date, 'value': value};
   }
 }
