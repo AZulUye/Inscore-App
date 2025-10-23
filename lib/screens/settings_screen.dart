@@ -34,27 +34,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'Settings',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
-        actions: [
-          Consumer<SocialMediaProvider>(
-            builder: (context, socialMediaProvider, child) {
-              return IconButton(
-                icon: socialMediaProvider.isCheckingStatus
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh),
-                onPressed: socialMediaProvider.isCheckingStatus
-                    ? null
-                    : () {
-                        socialMediaProvider.checkConnectionStatus();
-                      },
-                tooltip: 'Refresh connection status',
-              );
-            },
-          ),
-        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
