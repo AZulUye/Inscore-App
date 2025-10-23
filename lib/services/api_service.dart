@@ -426,4 +426,118 @@ class ApiService {
   void removeAuthorizationHeader() {
     _dio.options.headers.remove('Authorization');
   }
+
+  // Instagram disconnect endpoint
+  Future<Map<String, dynamic>> disconnectInstagram() async {
+    try {
+      final response = await _dio.delete('/instagram/disconnect');
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true) {
+        return data;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to disconnect Instagram',
+        );
+      }
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  // Facebook disconnect endpoint
+  Future<Map<String, dynamic>> disconnectFacebook() async {
+    try {
+      final response = await _dio.delete('/facebook/disconnect');
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true) {
+        return data;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to disconnect Facebook',
+        );
+      }
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  // Check Instagram connection status using metrics endpoint
+  Future<Map<String, dynamic>> checkInstagramConnectionStatus() async {
+    try {
+      final response = await _dio.get('/instagram/metrics');
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true && data['data'] != null) {
+        // If we get metrics data, it means connected
+        return {'connected': true, 'data': data['data']};
+      } else {
+        // If no metrics data, return status indicating not connected
+        return {
+          'connected': false,
+          'message': data['message'] ?? 'Not connected',
+        };
+      }
+    } on DioException catch (e) {
+      // Handle various error cases
+      if (e.response?.statusCode == 404 || e.response?.statusCode == 400) {
+        return {'connected': false, 'message': 'Not connected'};
+      }
+
+      // Handle server errors (500, etc.)
+      if (e.response?.statusCode != null && e.response!.statusCode! >= 500) {
+        return {'connected': false, 'message': 'Server error - not connected'};
+      }
+
+      // Handle other DioExceptions
+      return {'connected': false, 'message': 'Connection check failed'};
+    } catch (e) {
+      // Handle any other exceptions
+      return {'connected': false, 'message': 'Connection check failed'};
+    }
+  }
+
+  // Check Facebook connection status using metrics endpoint
+  Future<Map<String, dynamic>> checkFacebookConnectionStatus() async {
+    try {
+      final response = await _dio.get('/facebook/metrics');
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true && data['data'] != null) {
+        // If we get metrics data, it means connected
+        return {'connected': true, 'data': data['data']};
+      } else {
+        // If no metrics data, return status indicating not connected
+        return {
+          'connected': false,
+          'message': data['message'] ?? 'Not connected',
+        };
+      }
+    } on DioException catch (e) {
+      // Handle various error cases
+      if (e.response?.statusCode == 404 || e.response?.statusCode == 400) {
+        return {'connected': false, 'message': 'Not connected'};
+      }
+
+      // Handle server errors (500, etc.)
+      if (e.response?.statusCode != null && e.response!.statusCode! >= 500) {
+        return {'connected': false, 'message': 'Server error - not connected'};
+      }
+
+      // Handle other DioExceptions
+      return {'connected': false, 'message': 'Connection check failed'};
+    } catch (e) {
+      // Handle any other exceptions
+      return {'connected': false, 'message': 'Connection check failed'};
+    }
+  }
 }

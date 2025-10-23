@@ -13,6 +13,7 @@ class SocialMediaProvider extends ChangeNotifier {
   // Loading states
   bool _isInstagramConnecting = false;
   bool _isFacebookConnecting = false;
+  bool _isCheckingStatus = false;
 
   SocialMediaProvider(this._apiService);
 
@@ -21,6 +22,7 @@ class SocialMediaProvider extends ChangeNotifier {
   bool get isFacebookConnected => _isFacebookConnected;
   bool get isInstagramConnecting => _isInstagramConnecting;
   bool get isFacebookConnecting => _isFacebookConnecting;
+  bool get isCheckingStatus => _isCheckingStatus;
 
   // Instagram connection methods
   Future<void> connectInstagram(BuildContext context) async {
@@ -131,8 +133,17 @@ class SocialMediaProvider extends ChangeNotifier {
   }
 
   Future<void> _disconnectInstagram(BuildContext context) async {
-    _setInstagramConnected(false);
-    _showSnackBar(context, 'Instagram disconnected');
+    try {
+      await _apiService.disconnectInstagram();
+      _setInstagramConnected(false);
+      _showSnackBar(context, 'Instagram disconnected successfully');
+    } catch (e) {
+      _showSnackBar(
+        context,
+        'Failed to disconnect Instagram: ${e.toString()}',
+        backgroundColor: Colors.red,
+      );
+    }
   }
 
   // Facebook connection methods
@@ -244,8 +255,17 @@ class SocialMediaProvider extends ChangeNotifier {
   }
 
   Future<void> _disconnectFacebook(BuildContext context) async {
-    _setFacebookConnected(false);
-    _showSnackBar(context, 'Facebook disconnected');
+    try {
+      await _apiService.disconnectFacebook();
+      _setFacebookConnected(false);
+      _showSnackBar(context, 'Facebook disconnected successfully');
+    } catch (e) {
+      _showSnackBar(
+        context,
+        'Failed to disconnect Facebook: ${e.toString()}',
+        backgroundColor: Colors.red,
+      );
+    }
   }
 
   // Private setters
@@ -280,13 +300,48 @@ class SocialMediaProvider extends ChangeNotifier {
     );
   }
 
-  // Method to check connection status from API (for future use)
+  // Method to check connection status from API
   Future<void> checkConnectionStatus() async {
+    _isCheckingStatus = true;
+    notifyListeners();
+
     try {
-      // TODO: Add API calls to check actual connection status
-      // This would be called when the app starts or when returning from OAuth
+      // Check Instagram connection status
+      final instagramStatus = await _apiService
+          .checkInstagramConnectionStatus();
+      _isInstagramConnected = instagramStatus['connected'] == true;
+
+      // Check Facebook connection status
+      final facebookStatus = await _apiService.checkFacebookConnectionStatus();
+      _isFacebookConnected = facebookStatus['connected'] == true;
     } catch (e) {
       // Handle error silently or show appropriate message
+      print('Error checking connection status: $e');
+    } finally {
+      _isCheckingStatus = false;
+      notifyListeners();
+    }
+  }
+
+  // Method to check Instagram connection status only
+  Future<void> checkInstagramConnectionStatus() async {
+    try {
+      final status = await _apiService.checkInstagramConnectionStatus();
+      _isInstagramConnected = status['connected'] == true;
+      notifyListeners();
+    } catch (e) {
+      print('Error checking Instagram connection status: $e');
+    }
+  }
+
+  // Method to check Facebook connection status only
+  Future<void> checkFacebookConnectionStatus() async {
+    try {
+      final status = await _apiService.checkFacebookConnectionStatus();
+      _isFacebookConnected = status['connected'] == true;
+      notifyListeners();
+    } catch (e) {
+      print('Error checking Facebook connection status: $e');
     }
   }
 

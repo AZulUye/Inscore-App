@@ -17,6 +17,15 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
+  void initState() {
+    super.initState();
+    // Check connection status when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SocialMediaProvider>().checkConnectionStatus();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -25,6 +34,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'Settings',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
+        actions: [
+          Consumer<SocialMediaProvider>(
+            builder: (context, socialMediaProvider, child) {
+              return IconButton(
+                icon: socialMediaProvider.isCheckingStatus
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh),
+                onPressed: socialMediaProvider.isCheckingStatus
+                    ? null
+                    : () {
+                        socialMediaProvider.checkConnectionStatus();
+                      },
+                tooltip: 'Refresh connection status',
+              );
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -53,7 +83,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.camera_alt,
                     iconColor: Colors.pink,
                     isConnected: socialMediaProvider.isInstagramConnected,
-                    isLoading: socialMediaProvider.isInstagramConnecting,
+                    isLoading:
+                        socialMediaProvider.isInstagramConnecting ||
+                        socialMediaProvider.isCheckingStatus,
                     onToggle: () =>
                         socialMediaProvider.connectInstagram(context),
                   );
@@ -67,7 +99,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.facebook,
                     iconColor: Colors.blue,
                     isConnected: socialMediaProvider.isFacebookConnected,
-                    isLoading: socialMediaProvider.isFacebookConnecting,
+                    isLoading:
+                        socialMediaProvider.isFacebookConnecting ||
+                        socialMediaProvider.isCheckingStatus,
                     onToggle: () =>
                         socialMediaProvider.connectFacebook(context),
                   );
