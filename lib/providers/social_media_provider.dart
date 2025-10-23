@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../services/api_service.dart';
+import '../features/profile/data/profile_repository.dart';
 
 class SocialMediaProvider extends ChangeNotifier {
-  final ApiService _apiService;
+  final ProfileRepository _profileRepository;
 
   // Connection states
   bool _isInstagramConnected = false;
@@ -15,7 +15,7 @@ class SocialMediaProvider extends ChangeNotifier {
   bool _isFacebookConnecting = false;
   bool _isCheckingStatus = false;
 
-  SocialMediaProvider(this._apiService);
+  SocialMediaProvider(this._profileRepository);
 
   // Getters
   bool get isInstagramConnected => _isInstagramConnected;
@@ -34,7 +34,7 @@ class SocialMediaProvider extends ChangeNotifier {
     _setInstagramConnecting(true);
 
     try {
-      final response = await _apiService.connectInstagram();
+      final response = await _profileRepository.connectInstagram();
 
       if (response['url'] != null) {
         final urlString = response['url'] as String;
@@ -134,7 +134,7 @@ class SocialMediaProvider extends ChangeNotifier {
 
   Future<void> _disconnectInstagram(BuildContext context) async {
     try {
-      await _apiService.disconnectInstagram();
+      await _profileRepository.disconnectInstagram();
       _setInstagramConnected(false);
       _showSnackBar(context, 'Instagram disconnected successfully');
     } catch (e) {
@@ -156,7 +156,7 @@ class SocialMediaProvider extends ChangeNotifier {
     _setFacebookConnecting(true);
 
     try {
-      final response = await _apiService.connectFacebook();
+      final response = await _profileRepository.connectFacebook();
 
       if (response['url'] != null) {
         final urlString = response['url'] as String;
@@ -256,7 +256,7 @@ class SocialMediaProvider extends ChangeNotifier {
 
   Future<void> _disconnectFacebook(BuildContext context) async {
     try {
-      await _apiService.disconnectFacebook();
+      await _profileRepository.disconnectFacebook();
       _setFacebookConnected(false);
       _showSnackBar(context, 'Facebook disconnected successfully');
     } catch (e) {
@@ -307,12 +307,13 @@ class SocialMediaProvider extends ChangeNotifier {
 
     try {
       // Check Instagram connection status
-      final instagramStatus = await _apiService
+      final instagramStatus = await _profileRepository
           .checkInstagramConnectionStatus();
       _isInstagramConnected = instagramStatus['connected'] == true;
 
       // Check Facebook connection status
-      final facebookStatus = await _apiService.checkFacebookConnectionStatus();
+      final facebookStatus = await _profileRepository
+          .checkFacebookConnectionStatus();
       _isFacebookConnected = facebookStatus['connected'] == true;
     } catch (e) {
       // Handle error silently or show appropriate message
@@ -326,7 +327,7 @@ class SocialMediaProvider extends ChangeNotifier {
   // Method to check Instagram connection status only
   Future<void> checkInstagramConnectionStatus() async {
     try {
-      final status = await _apiService.checkInstagramConnectionStatus();
+      final status = await _profileRepository.checkInstagramConnectionStatus();
       _isInstagramConnected = status['connected'] == true;
       notifyListeners();
     } catch (e) {
@@ -337,7 +338,7 @@ class SocialMediaProvider extends ChangeNotifier {
   // Method to check Facebook connection status only
   Future<void> checkFacebookConnectionStatus() async {
     try {
-      final status = await _apiService.checkFacebookConnectionStatus();
+      final status = await _profileRepository.checkFacebookConnectionStatus();
       _isFacebookConnected = status['connected'] == true;
       notifyListeners();
     } catch (e) {
