@@ -12,7 +12,7 @@ import '../screens/splash_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
-import '../features/profile/presentation/edit_profile_provider.dart';
+import '../providers/edit_profile_provider.dart';
 import '../providers/auth_provider.dart';
 
 class AppRoutes {

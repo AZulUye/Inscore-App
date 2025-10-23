@@ -1,16 +1,16 @@
 import 'package:inscore_app/core/exception_handler.dart';
-import 'package:inscore_app/features/profile/data/models/response_metric_facebook.dart';
-import 'package:inscore_app/features/profile/data/models/response_metric_instagram.dart';
+import 'package:inscore_app/features/profile/domain/response_metric_facebook.dart';
+import 'package:inscore_app/features/profile/domain/response_metric_instagram.dart';
 import 'package:inscore_app/models/user.dart';
 
-import '../../../core/base_viewmodel.dart';
-import '../../../services/api_service.dart';
-import '../../profile/data/models/score_response.dart';
+import '../core/base_viewmodel.dart';
+import '../features/profile/data/profile_repository.dart';
+import '../features/profile/domain/score_response.dart';
 
 class ProfileProvider extends BaseViewModel {
-  final ApiService _apiService;
+  final ProfileRepository _profileRepository;
 
-  ProfileProvider(this._apiService);
+  ProfileProvider(this._profileRepository);
 
   User? _currentUser;
   Data? _userScore;
@@ -56,14 +56,15 @@ class ProfileProvider extends BaseViewModel {
       print('🔄 Fetching user score...');
 
       // Check connection status first
-      final instagramStatus = await _apiService
+      final instagramStatus = await _profileRepository
           .checkInstagramConnectionStatus();
-      final facebookStatus = await _apiService.checkFacebookConnectionStatus();
+      final facebookStatus = await _profileRepository
+          .checkFacebookConnectionStatus();
 
       print('📊 Instagram connected: ${instagramStatus['connected']}');
       print('📊 Facebook connected: ${facebookStatus['connected']}');
 
-      final result = await _apiService.fetchUserScore();
+      final result = await _profileRepository.fetchUserScore();
 
       // Only show scores for connected platforms
       if (instagramStatus['connected'] == true &&
@@ -74,34 +75,34 @@ class ProfileProvider extends BaseViewModel {
           '📊 Both connected - showing full scores: Instagram=${result.instagramScore}, Facebook=${result.facebookScore}, Final=${result.finalScore}',
         );
       } else if (instagramStatus['connected'] == true) {
-        // Only Instagram connected - show Instagram score, Facebook = 0, Final = Instagram
+        // Only Instagram connected - show Instagram score, Facebook = 0, Final = server final score
         _userScore = Data(
           businessId: result.businessId,
           date: result.date,
           instagramScore: result.instagramScore,
           facebookScore: 0.0,
-          finalScore: result.instagramScore, // Final = Instagram score
+          finalScore: result.finalScore, // Final = server final score
           updatedAt: result.updatedAt,
           createdAt: result.createdAt,
           id: result.id,
         );
         print(
-          '📊 Only Instagram connected - Instagram=${result.instagramScore}, Facebook=0, Final=${result.instagramScore}',
+          '📊 Only Instagram connected - Instagram=${result.instagramScore}, Facebook=0, Final=${result.finalScore}',
         );
       } else if (facebookStatus['connected'] == true) {
-        // Only Facebook connected - show Facebook score, Instagram = 0, Final = Facebook
+        // Only Facebook connected - show Facebook score, Instagram = 0, Final = server final score
         _userScore = Data(
           businessId: result.businessId,
           date: result.date,
           instagramScore: 0.0,
           facebookScore: result.facebookScore,
-          finalScore: result.facebookScore, // Final = Facebook score
+          finalScore: result.finalScore, // Final = server final score
           updatedAt: result.updatedAt,
           createdAt: result.createdAt,
           id: result.id,
         );
         print(
-          '📊 Only Facebook connected - Instagram=0, Facebook=${result.facebookScore}, Final=${result.facebookScore}',
+          '📊 Only Facebook connected - Instagram=0, Facebook=${result.facebookScore}, Final=${result.finalScore}',
         );
       } else {
         // Neither connected - show all zeros
@@ -133,7 +134,7 @@ class ProfileProvider extends BaseViewModel {
       print('🔍 Checking Instagram connection status...');
 
       // First check if Instagram is connected
-      final connectionStatus = await _apiService
+      final connectionStatus = await _profileRepository
           .checkInstagramConnectionStatus();
       print('📊 Instagram connection status: $connectionStatus');
 
@@ -141,7 +142,7 @@ class ProfileProvider extends BaseViewModel {
         // If connected, fetch metrics
         print('✅ Instagram connected, fetching metrics...');
         try {
-          final result = await _apiService.fetchInstagramMetrics();
+          final result = await _profileRepository.fetchInstagramMetrics();
           _instagramMetrics = result;
           print('📈 Instagram metrics fetched successfully:');
           print('  - Username: ${result.username}');
@@ -175,7 +176,7 @@ class ProfileProvider extends BaseViewModel {
       print('🔍 Checking Facebook connection status...');
 
       // First check if Facebook is connected
-      final connectionStatus = await _apiService
+      final connectionStatus = await _profileRepository
           .checkFacebookConnectionStatus();
       print('📊 Facebook connection status: $connectionStatus');
 
@@ -183,7 +184,7 @@ class ProfileProvider extends BaseViewModel {
         // If connected, fetch metrics
         print('✅ Facebook connected, fetching metrics...');
         try {
-          final result = await _apiService.fetchFacebookMetrics();
+          final result = await _profileRepository.fetchFacebookMetrics();
           _facebookMetrics = result;
           print('📈 Facebook metrics fetched successfully:');
           print('  - Username: ${result.username}');

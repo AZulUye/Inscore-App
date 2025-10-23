@@ -4,7 +4,7 @@ import 'package:inscore_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
-import 'edit_profile_provider.dart';
+import '../../../providers/edit_profile_provider.dart';
 import 'widget/form_widgets.dart';
 
 class EditProfileScreen extends StatefulWidget {

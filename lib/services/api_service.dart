@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../core/constants.dart';
 import '../core/exception_handler.dart';
-import '../features/profile/data/models/score_response.dart';
-import '../features/profile/data/models/response_metric_facebook.dart';
-import '../features/profile/data/models/response_metric_instagram.dart';
+import '../features/profile/domain/score_response.dart';
+import '../features/profile/domain/response_metric_facebook.dart';
+import '../features/profile/domain/response_metric_instagram.dart';
 
 class ApiService {
   late final Dio _dio;

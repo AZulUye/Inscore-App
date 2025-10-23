@@ -4,10 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
 import 'package:inscore_app/providers/auth_provider.dart';
-import 'package:inscore_app/services/api_service.dart';
+import '../data/profile_repository.dart';
+import '../../../services/api_service.dart';
 import 'package:inscore_app/features/profile/presentation/widget/point_card.dart';
 import '../presentation/widget/social_media_section.dart';
-import '../presentation/profile_provider.dart';
+import '../../../providers/profile_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -97,7 +98,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ProfileProvider(context.read<ApiService>()),
+      create: (context) =>
+          ProfileProvider(ProfileRepository(context.read<ApiService>())),
       child: Consumer<ProfileProvider>(
         builder: (context, profileProvider, child) {
           // Initialize profile data if not already initialized
