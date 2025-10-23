@@ -53,11 +53,75 @@ class ProfileProvider extends BaseViewModel {
   Future<void> fetchUserScore() async {
     try {
       setLoading(true);
+      print('🔄 Fetching user score...');
+
+      // Check connection status first
+      final instagramStatus = await _apiService
+          .checkInstagramConnectionStatus();
+      final facebookStatus = await _apiService.checkFacebookConnectionStatus();
+
+      print('📊 Instagram connected: ${instagramStatus['connected']}');
+      print('📊 Facebook connected: ${facebookStatus['connected']}');
+
       final result = await _apiService.fetchUserScore();
-      _userScore = result;
+
+      // Only show scores for connected platforms
+      if (instagramStatus['connected'] == true &&
+          facebookStatus['connected'] == true) {
+        // Both connected - show all scores from server
+        _userScore = result;
+        print(
+          '📊 Both connected - showing full scores: Instagram=${result.instagramScore}, Facebook=${result.facebookScore}, Final=${result.finalScore}',
+        );
+      } else if (instagramStatus['connected'] == true) {
+        // Only Instagram connected - show Instagram score, Facebook = 0, Final = Instagram
+        _userScore = Data(
+          businessId: result.businessId,
+          date: result.date,
+          instagramScore: result.instagramScore,
+          facebookScore: 0.0,
+          finalScore: result.instagramScore, // Final = Instagram score
+          updatedAt: result.updatedAt,
+          createdAt: result.createdAt,
+          id: result.id,
+        );
+        print(
+          '📊 Only Instagram connected - Instagram=${result.instagramScore}, Facebook=0, Final=${result.instagramScore}',
+        );
+      } else if (facebookStatus['connected'] == true) {
+        // Only Facebook connected - show Facebook score, Instagram = 0, Final = Facebook
+        _userScore = Data(
+          businessId: result.businessId,
+          date: result.date,
+          instagramScore: 0.0,
+          facebookScore: result.facebookScore,
+          finalScore: result.facebookScore, // Final = Facebook score
+          updatedAt: result.updatedAt,
+          createdAt: result.createdAt,
+          id: result.id,
+        );
+        print(
+          '📊 Only Facebook connected - Instagram=0, Facebook=${result.facebookScore}, Final=${result.facebookScore}',
+        );
+      } else {
+        // Neither connected - show all zeros
+        _userScore = Data(
+          businessId: result.businessId,
+          date: result.date,
+          instagramScore: 0.0,
+          facebookScore: 0.0,
+          finalScore: 0.0, // Final = 0
+          updatedAt: result.updatedAt,
+          createdAt: result.createdAt,
+          id: result.id,
+        );
+        print('📊 Neither connected - All scores = 0');
+      }
+
       setSuccess();
       notifyListeners();
     } catch (e) {
+      print('💥 Error fetching user score: $e');
       final errorMsg = ExceptionHandler.getErrorMessage(e);
       setError(errorMsg);
     }
