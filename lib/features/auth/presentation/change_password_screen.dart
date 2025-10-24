@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inscore_app/shared/custom_text.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/app_routes.dart';
@@ -33,11 +34,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => context.go(AppRoutes.main),
         ),
-        title: const Text('Change  Password'),
+        title: const CustomText(
+          'Change  Password',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          textAlign: TextAlign.left,
+        ),
         centerTitle: true,
       ),
       body: SafeArea(
