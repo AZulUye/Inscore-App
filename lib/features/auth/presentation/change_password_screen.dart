@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:inscore_app/shared/custom_text.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/app_routes.dart';
 import '../../../providers/auth_provider.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -40,7 +39,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             Icons.arrow_back,
             color: Theme.of(context).colorScheme.onSurface,
           ),
-          onPressed: () => context.go(AppRoutes.main),
+          onPressed: () => context.pop(),
         ),
         title: const CustomText(
           'Change  Password',
@@ -173,7 +172,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     backgroundColor: Colors.green,
                                   ),
                                 );
-                                context.go(AppRoutes.settings);
+                                context.pop(); // Kembali ke settings screen
                               } catch (e) {
                                 if (!context.mounted) return;
                                 final msg =

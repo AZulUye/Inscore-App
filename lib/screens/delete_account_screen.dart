@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../shared/custom_text.dart';
-import '../core/app_routes.dart';
 
 class DeleteAccountScreen extends StatelessWidget {
   const DeleteAccountScreen({super.key});
@@ -16,7 +15,7 @@ class DeleteAccountScreen extends StatelessWidget {
             Icons.arrow_back,
             color: Theme.of(context).colorScheme.onSurface,
           ),
-          onPressed: () => context.go(AppRoutes.settings),
+          onPressed: () => context.pop(),
         ),
         title: const CustomText(
           'Delete Account',
