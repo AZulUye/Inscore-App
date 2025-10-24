@@ -47,17 +47,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildListTile(
                 context,
                 title: 'Profile',
-                onTap: () => context.go(AppRoutes.profile),
+                onTap: () => context.push(AppRoutes.profile),
               ),
               _buildListTile(
                 context,
                 title: 'Change Password',
-                onTap: () => context.go(AppRoutes.changePassword),
+                onTap: () => context.push(AppRoutes.changePassword),
               ),
               _buildListTile(
                 context,
                 title: 'Delete Account',
-                onTap: () => context.go(AppRoutes.deleteAccount),
+                onTap: () => context.push(AppRoutes.deleteAccount),
               ),
               Consumer<SocialMediaProvider>(
                 builder: (context, socialMediaProvider, child) {
