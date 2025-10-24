@@ -28,9 +28,11 @@ class HomeContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hi, ${homeData.user.name}!',
+                  'Hi, welcome to Inscore!\n${homeData.user.name}!',
+                  maxLines: 3,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    overflow: TextOverflow.clip,
                   ),
                 ),
                 const SizedBox(height: 4),

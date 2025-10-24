@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inscore_app/providers/auth_provider.dart';
+import 'package:inscore_app/shared/custom_text.dart';
 import 'package:provider/provider.dart';
 import 'package:inscore_app/core/app_routes.dart';
 import 'package:inscore_app/models/user.dart';
@@ -48,11 +49,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => context.go(AppRoutes.profile),
         ),
-        title: const Text('Edit Profile'),
+        title: const CustomText(
+          'Edit Profile',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          textAlign: TextAlign.left,
+        ),
         centerTitle: true,
       ),
       body: Consumer<EditProfileProvider>(

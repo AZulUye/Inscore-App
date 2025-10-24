@@ -165,19 +165,21 @@ class Rank {
 class WeeklyComparison {
   final double lastWeekAvgScore;
   final double thisWeekAvgScore;
-  final double deltaPercent;
+  final double? deltaPercent;
 
   WeeklyComparison({
     required this.lastWeekAvgScore,
     required this.thisWeekAvgScore,
-    required this.deltaPercent,
+    this.deltaPercent,
   });
 
   factory WeeklyComparison.fromJson(Map<String, dynamic> json) {
     return WeeklyComparison(
       lastWeekAvgScore: (json['lastWeekAvgScore'] as num).toDouble(),
       thisWeekAvgScore: (json['thisWeekAvgScore'] as num).toDouble(),
-      deltaPercent: (json['deltaPercent'] as num).toDouble(),
+      deltaPercent: json['deltaPercent'] != null
+          ? (json['deltaPercent'] as num).toDouble()
+          : null,
     );
   }
 
@@ -212,14 +214,14 @@ class Charts {
 
 class DailyScoreSeries {
   final String date;
-  final double value;
+  final double? value;
 
-  DailyScoreSeries({required this.date, required this.value});
+  DailyScoreSeries({required this.date, this.value});
 
   factory DailyScoreSeries.fromJson(Map<String, dynamic> json) {
     return DailyScoreSeries(
       date: json['date'] as String,
-      value: (json['value'] as num).toDouble(),
+      value: json['value'] != null ? (json['value'] as num).toDouble() : null,
     );
   }
 

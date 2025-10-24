@@ -50,14 +50,18 @@ class WeeklyScoreTrendChart extends StatelessWidget {
       final date = DateTime.parse(data.date);
       // weekday: 1=Monday, 7=Sunday -> convert to 0-6 (0=Monday, 6=Sunday)
       final dayIndex = date.weekday - 1;
+
+      final value = data.value ?? 0.0;
       spots.add(FlSpot(
         dayIndex.toDouble(),
-        data.value,
+        value,
       ));
     }
 
-    // Calculate max for better scaling
-    final values = chartData.dailyScoreSeries.map((e) => e.value).toList();
+    // Calculate max for better scaling (handle null values)
+    final values = chartData.dailyScoreSeries
+        .map((e) => e.value ?? 0.0)
+        .toList();
     final maxValue = values.isEmpty ? 100.0 : values.reduce((a, b) => a > b ? a : b);
 
     // Y-axis from 0 to rounded max

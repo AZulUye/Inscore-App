@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:inscore_app/screens/delete_account_screen.dart';
 import 'package:inscore_app/screens/main_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,7 @@ class AppRoutes {
   static const String main = '/main';
   static const String changePassword = '/change-password';
   static const String editProfile = '/edit-profile';
+  static const String deleteAccount = '/delete-account';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -89,6 +91,11 @@ class AppRoutes {
         path: main,
         name: 'main',
         builder: (context, state) => const MainScreen(),
+      ),
+      GoRoute(
+        path: deleteAccount,
+        name: 'delete_account',
+        builder: (context, state) => const DeleteAccountScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
