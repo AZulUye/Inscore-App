@@ -5,12 +5,17 @@ part 'user.g.dart';
 
 @JsonSerializable()
 class User extends Equatable {
+  @JsonKey(fromJson: _idToString)
   final String id;
   final String name;
   final String email;
+  @JsonKey(name: 'avatar_url')
   final String? avatar;
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
+  static String _idToString(dynamic id) => id.toString();
 
   const User({
     required this.id,
@@ -44,14 +49,7 @@ class User extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-        id,
-        name,
-        email,
-        avatar,
-        createdAt,
-        updatedAt,
-      ];
+  List<Object?> get props => [id, name, email, avatar, createdAt, updatedAt];
 
   @override
   String toString() {

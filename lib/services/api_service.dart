@@ -35,7 +35,9 @@ class ApiService {
           handler.next(options);
         },
         onResponse: (response, handler) {
-          _logger.d('Response: ${response.statusCode} ${response.requestOptions.path}');
+          _logger.d(
+            'Response: ${response.statusCode} ${response.requestOptions.path}',
+          );
           _logger.d('Data: ${response.data}');
           handler.next(response);
         },
@@ -51,36 +53,54 @@ class ApiService {
   // Authentication endpoints
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      // Mock login for demo purposes
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (email == 'demo@example.com' && password == 'password') {
-        return {
-          'id': 'demo_user_123',
-          'name': 'Demo User',
-          'email': email,
-          'avatar': null,
-          'createdAt': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
-          'updatedAt': DateTime.now().toIso8601String(),
-        };
-      }
-      
-      // For real implementation:
-      // final response = await _dio.post('/auth/login', data: {
-      //   'email': email,
-      //   'password': password,
-      // });
-      // return response.data;
-      
-      throw DioException(
-        requestOptions: RequestOptions(path: '/auth/login'),
-        response: Response(
-          requestOptions: RequestOptions(path: '/auth/login'),
-          statusCode: 401,
-          data: {'message': 'Invalid credentials'},
-        ),
+      final response = await _dio.post(
+        '/login',
+        data: {'email': email, 'password': password},
       );
-      
+      final data = response.data as Map<String, dynamic>;
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Login failed',
+        );
+      }
+    } on DioException catch (e) {
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> register({
+    required String name,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/register',
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
+      );
+
+      final data = response.data as Map<String, dynamic>;
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Register failed',
+        );
+      }
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
@@ -92,10 +112,9 @@ class ApiService {
     try {
       // Mock logout
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // For real implementation:
       // await _dio.post('/auth/logout');
-      
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
@@ -104,24 +123,19 @@ class ApiService {
   }
 
   // User endpoints
-  Future<Map<String, dynamic>> getUser(String userId) async {
+  Future<Map<String, dynamic>> getUser() async {
     try {
-      // Mock get user for demo purposes
-      await Future.delayed(const Duration(milliseconds: 500));
-      
-      return {
-        'id': userId,
-        'name': 'Demo User',
-        'email': 'demo@example.com',
-        'avatar': null,
-        'createdAt': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
-      };
-      
-      // For real implementation:
-      // final response = await _dio.get('/users/$userId');
-      // return response.data;
-      
+      final response = await _dio.get('/profile');
+      final data = response.data;
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to fetch user',
+        );
+      }
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
@@ -133,19 +147,109 @@ class ApiService {
     try {
       // Mock update user for demo purposes
       await Future.delayed(const Duration(milliseconds: 500));
-      
-      return {
-        ...userData,
-        'updatedAt': DateTime.now().toIso8601String(),
-      };
-      
+
+      return {...userData, 'updatedAt': DateTime.now().toIso8601String()};
+
       // For real implementation:
       // final response = await _dio.put('/users/${userData['id']}', data: userData);
       // return response.data;
-      
     } on DioException catch (e) {
       throw ExceptionHandler.handleDioException(e);
     } catch (e) {
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String name,
+    required String email,
+    String? avatarPath,
+  }) async {
+    try {
+      Map<String, dynamic> formDataMap = {'name': name, 'email': email};
+
+      if (avatarPath != null && avatarPath.isNotEmpty) {
+        try {
+          formDataMap['avatar'] = await MultipartFile.fromFile(avatarPath);
+          _logger.d('Avatar file added: $avatarPath');
+        } catch (e) {
+          _logger.e('Error creating MultipartFile: $e');
+          // Continue without avatar if file creation fails
+        }
+      }
+
+      FormData formData = FormData.fromMap(formDataMap);
+
+      _logger.d('FormData fields: ${formData.fields}');
+      _logger.d('FormData files: ${formData.files}');
+
+      final response = await _dio.post(
+        '/profile',
+        data: formData,
+        options: Options(
+          headers: {'Content-Type': 'multipart/form-data'},
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
+      final data = response.data as Map<String, dynamic>;
+
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to update profile',
+        );
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException in updateProfile: ${e.message}');
+      _logger.e('Response data: ${e.response?.data}');
+      _logger.e('Request data: ${e.requestOptions.data}');
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      _logger.e('Generic exception in updateProfile: $e');
+      throw ExceptionHandler.handleGenericException(e);
+    }
+  }
+
+  // Alternative method for testing without multipart
+  Future<Map<String, dynamic>> updateProfileSimple({
+    required String name,
+    required String email,
+  }) async {
+    try {
+      _logger.d('Updating profile with name: $name, email: $email');
+
+      final response = await _dio.post(
+        '/profile',
+        data: {'name': name, 'email': email},
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      );
+
+      final data = response.data as Map<String, dynamic>;
+      _logger.d('Profile update response: $data');
+
+      if (data['success'] == true && data['data'] != null) {
+        return data['data'] as Map<String, dynamic>;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: data['message'] ?? 'Failed to update profile',
+        );
+      }
+    } on DioException catch (e) {
+      _logger.e('DioException in updateProfileSimple: ${e.message}');
+      _logger.e('Response data: ${e.response?.data}');
+      throw ExceptionHandler.handleDioException(e);
+    } catch (e) {
+      _logger.e('Generic exception in updateProfileSimple: $e');
       throw ExceptionHandler.handleGenericException(e);
     }
   }

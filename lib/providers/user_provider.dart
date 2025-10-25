@@ -4,57 +4,44 @@ import '../services/api_service.dart';
 import '../core/exception_handler.dart';
 
 class UserProvider extends BaseViewModel {
+  String? get error => isError ? errorMessage : null;
   User? _user;
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService;
+
+  UserProvider(this._apiService);
 
   User? get user => _user;
 
   Future<void> login(String email, String password) async {
-    try {
-      setLoading();
-      
-      // Simulate API call delay
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // TODO: Replace with actual API call
-      final userData = await _apiService.login(email, password);
-      
-      _user = User.fromJson(userData);
-      setSuccess();
-      
-    } catch (e) {
-      final errorMessage = ExceptionHandler.getErrorMessage(e);
-      setError(errorMessage);
-      rethrow;
-    }
+    // Auth moved to AuthProvider. Use AuthProvider.login instead.
+  }
+
+  Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    // Auth moved to AuthProvider. Use AuthProvider.register instead.
   }
 
   Future<void> logout() async {
-    try {
-      setLoading();
-      
-      // TODO: Call logout API if needed
-      await _apiService.logout();
-      
-      _user = null;
-      setIdle();
-      
-    } catch (e) {
-      final errorMessage = ExceptionHandler.getErrorMessage(e);
-      setError(errorMessage);
-    }
+    // Auth moved to AuthProvider. Use AuthProvider.logout instead.
   }
 
   Future<void> updateProfile(User updatedUser) async {
     try {
-      setLoading();
-      
-      // TODO: Replace with actual API call
-      final userData = await _apiService.updateUser(updatedUser.toJson());
-      
+      setLoading(true);
+
+      // Use the new updateProfile method from ApiService
+      final userData = await _apiService.updateProfile(
+        name: updatedUser.name,
+        email: updatedUser.email,
+        avatarPath: null, // Avatar will be handled by EditProfileProvider
+      );
+
       _user = User.fromJson(userData);
       setSuccess();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -64,16 +51,15 @@ class UserProvider extends BaseViewModel {
 
   Future<void> refreshUser() async {
     if (_user == null) return;
-    
+
     try {
-      setLoading();
-      
+      setLoading(true);
+
       // TODO: Replace with actual API call
-      final userData = await _apiService.getUser(_user!.id);
-      
+      final userData = await _apiService.getUser();
+
       _user = User.fromJson(userData);
       setSuccess();
-      
     } catch (e) {
       final errorMessage = ExceptionHandler.getErrorMessage(e);
       setError(errorMessage);
@@ -85,5 +71,8 @@ class UserProvider extends BaseViewModel {
     setIdle();
   }
 
-  bool get isAuthenticated => _user != null;
+  Future<bool> isAuthenticated() async {
+    // Auth moved to AuthProvider. Use AuthProvider.isAuthenticated instead.
+    throw UnsupportedError('Call AuthProvider.isAuthenticated()');
+  }
 }
