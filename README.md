@@ -87,5 +87,4 @@ Opsional platform lain (sesuaikan toolchain):
   - utils/ (helper & formatter)
 
 ## Catatan
-- Informasi dan narasi fitur didukung oleh konten publik di situs Inscore: https://inscore.fly.biz.id/
 - Beberapa fitur membutuhkan koneksi dan otorisasi ke platform sosial yang relevan (Instagram/Facebook).
